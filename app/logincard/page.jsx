@@ -13,6 +13,7 @@ export default function LoginCard({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [countdown, setCountdown] = useState(0);
+  const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
   // ESC + outside click to close
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function LoginCard({ isOpen, onClose }) {
     try {
       setLoading(true);
       setMessage("");
-      await axios.post("http://localhost:8000/sendOTP", { contact: mobile });
+      await axios.post(`${backendApi}/sendOTP`, { contact: mobile });
       setOtpSent(true);
       setMessage("OTP sent to your number.");
       setCountdown(300);
@@ -70,7 +71,7 @@ export default function LoginCard({ isOpen, onClose }) {
     if (otpValue.length !== 4) return;
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:8000/verifyOTP", {
+      const res = await axios.post(`${backendApi}/verifyOTP`, {
         contact: mobile,
         otp: otpValue,
       });
