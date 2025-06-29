@@ -7,17 +7,13 @@ import Address from "./Address";
 import { useRouter } from "next/navigation";
 import { useCart } from '../cartpro/CartContext';
 
-
 export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [location, setLocation] = useState("");
   const { cartItems } = useCart();
-  // const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const cartCount = cartItems.length; // ✅ unique item count
-
-
+  const cartCount = cartItems.length;
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
@@ -25,7 +21,7 @@ export default function Header() {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/searchpro?query=${encodeURIComponent(searchQuery.trim())}`);
-      setMobileMenuOpen(false); // Close mobile menu after search
+      setMobileMenuOpen(false);
     }
   };
 
@@ -51,6 +47,7 @@ export default function Header() {
     <>
       <nav className="h-20 bg-white/20 backdrop-blur-md shadow-sm sticky top-0 z-50 w-full border-b border-gray-200 transition duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+          
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image
@@ -65,20 +62,15 @@ export default function Header() {
 
           {/* Search + Location wrapper (Desktop) */}
           <div className="hidden md:flex flex-1 px-6 gap-6 items-center">
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 px-6">
-              <div className="relative w-full max-w-md">
+            
+            {/* Reduced width Search bar */}
+            <form onSubmit={handleSearch} className="hidden md:flex w-full">
+              <div className="relative w-full">
                 <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
+                    className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round"
                       d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
                     />
                   </svg>
@@ -93,9 +85,9 @@ export default function Header() {
               </div>
             </form>
 
-            {/* Location (Desktop) */}
+            {/* Increased width Location */}
             <div
-              className="flex flex-col justify-center cursor-pointer max-w-[240px] truncate"
+              className="flex flex-col justify-center cursor-pointer w-1/2 max-w-[320px] truncate"
               onClick={() => setShowLocationPopup(true)}
             >
               <span className="text-sm font-semibold text-black">Delivery in 24 Hours</span>
@@ -132,7 +124,8 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-gray-800 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -146,7 +139,6 @@ export default function Header() {
         {/* Mobile Menu Content */}
         {mobileMenuOpen && (
           <div className="md:hidden px-4 pb-4 pt-2 space-y-4 bg-white shadow">
-            {/* Search Input */}
             <input
               type="text"
               value={searchQuery}
@@ -155,8 +147,6 @@ export default function Header() {
               onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm"
             />
-
-            {/* Location (Mobile) */}
             <div
               className="flex flex-col justify-center cursor-pointer max-w-full"
               onClick={() => setShowLocationPopup(true)}
@@ -166,8 +156,6 @@ export default function Header() {
                 {location || "Choose location"}
               </span>
             </div>
-
-            {/* Login Button */}
             <button
               onClick={() => {
                 setShowLogin(true);
@@ -179,20 +167,18 @@ export default function Header() {
               Login
             </button>
 
-            {/* Cart Button */}
             <Link
-            href="/cart"
-            className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
-          >
-            <Image src="/cart.png" alt="Cart" width={24} height={24} className="mr-2 w-6 h-6" />
-            My Cart
-            {cartCount > 0 && (
-              <span className="absolute top-0 right-4 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-
+              href="/cart"
+              className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
+            >
+              <Image src="/cart.png" alt="Cart" width={24} height={24} className="mr-2 w-6 h-6" />
+              My Cart
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-4 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         )}
       </nav>

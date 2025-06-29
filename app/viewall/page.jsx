@@ -60,54 +60,54 @@ export default function ViewAll() {
 
       {/* Modal */}
       {showModal && selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md text-center">
-            {/* Product Image */}
-            <img
-              src={selectedItem.image}
-              alt={selectedItem.name}
-              className="mx-auto h-28 w-28 object-contain mb-4"
-            />
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="bg-white/90 p-6 rounded-lg shadow-2xl w-[90%] max-w-md text-center">
+      
+      {/* Product Image */}
+      <img
+        src={selectedItem.image}
+        alt={selectedItem.name}
+        className="mx-auto h-28 w-28 object-contain mb-4"
+      />
 
-            <h3 className="text-xl font-bold mb-1">{selectedItem.name}</h3>
-            <p className="text-gray-600 mb-1">Price: ₹{selectedItem.price}/kg</p>
-            <p className="text-gray-800 font-medium mb-4">
-              Total: ₹{modalTotal}
-            </p>
+      <h3 className="text-xl font-bold mb-1">{selectedItem.name}</h3>
+      <p className="text-gray-600 mb-1">Price: ₹{selectedItem.price}/kg</p>
+      <p className="text-gray-800 font-medium mb-4">Total: ₹{modalTotal}</p>
 
-            <div className="flex items-center justify-center space-x-4 mb-6">
-              <button
-                className="px-3 py-1 bg-gray-200 rounded text-lg"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </button>
-              <span className="text-lg font-medium">{quantity} kg</span>
-              <button
-                className="px-3 py-1 bg-gray-200 rounded text-lg"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </button>
-            </div>
+      <div className="flex items-center justify-center space-x-4 mb-6">
+        <button
+          className="px-3 py-1 bg-gray-200 rounded text-lg"
+          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+        >
+          -
+        </button>
+        <span className="text-lg font-medium">{quantity} kg</span>
+        <button
+          className="px-3 py-1 bg-gray-200 rounded text-lg"
+          onClick={() => setQuantity(quantity + 1)}
+        >
+          +
+        </button>
+      </div>
 
-            <div className="flex justify-end space-x-2">
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                onClick={handleAddToCart}
-              >
-                Add {quantity}kg
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="flex justify-end space-x-2">
+        <button
+          className="bg-gray-300 px-4 py-2 rounded"
+          onClick={() => setShowModal(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          onClick={handleAddToCart}
+        >
+          Add {quantity}kg
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </section>
   );
 }

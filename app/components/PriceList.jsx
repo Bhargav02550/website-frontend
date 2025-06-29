@@ -23,7 +23,7 @@ export default function PriceList() {
               className="mx-auto object-contain mb-4 h-50 w-50"
             />
             <h3 className="font-semibold text-lg">{item.name}</h3>
-            <p className="text-sm text-gray-600">{item.price}</p>
+            <p className="text-sm text-gray-600">₹{item.price}/kg</p>
           </div>
         ))}
       </div>
