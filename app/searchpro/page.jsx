@@ -1,18 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import products from "../data/products";
+import products from "../data/products"; // Make sure this is valid
 import { useCart } from "../cartpro/CartContext";
 
 export default function SearchProPage() {
   const searchParams = useSearchParams();
-  const query = searchParams.get("query")?.toLowerCase() || "";
+  const [query, setQuery] = useState("");
+  const [filteredResults, setFilteredResults] = useState(products);
   const { cartItems, addToCart } = useCart();
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const searchQuery = searchParams.get("query")?.toLowerCase() || "";
+    setQuery(searchQuery);
+
+    const results = searchQuery
+      ? products.filter((product) =>
+          product.name.toLowerCase().includes(searchQuery)
+        )
+      : products;
+
+    setFilteredResults(results);
+  }, [searchParams]);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -33,21 +47,15 @@ export default function SearchProPage() {
     ? (parseFloat(selectedItem.price) * quantity).toFixed(2)
     : 0;
 
-  const results = query
-    ? products.filter((product) =>
-        product.name.toLowerCase().includes(query)
-      )
-    : products;
-
   return (
     <section className="px-6 md:px-20 py-10">
       <h2 className="text-2xl font-bold mb-6 text-center md:text-left">
         {query ? `Search results for: "${query}"` : "All Vegetables"}
       </h2>
 
-      {results.length > 0 ? (
+      {filteredResults.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          {results.map((item) => (
+          {filteredResults.map((item) => (
             <div
               key={item.id}
               className="p-4 border border-neutral-50 rounded-xl text-center shadow-md hover:scale-105 hover:border-green-500 transition-transform duration-300 flex flex-col justify-between"
@@ -82,7 +90,9 @@ export default function SearchProPage() {
               className="mx-auto h-28 w-28 object-contain mb-4"
             />
             <h3 className="text-xl font-bold mb-1">{selectedItem.name}</h3>
-            <p className="text-gray-600 mb-1">Price: ₹{selectedItem.price}/kg</p>
+            <p className="text-gray-600 mb-1">
+              Price: ₹{selectedItem.price}/kg
+            </p>
             <p className="text-gray-800 font-medium mb-4">
               Total: ₹{modalTotal}
             </p>
