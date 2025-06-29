@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import LoginCard from "../logincard/page";
+import LoginCard from "../components/LoginCard";
 import React, { useEffect, useState } from "react";
 import Address from "./Address";
 import { useRouter } from "next/navigation";
