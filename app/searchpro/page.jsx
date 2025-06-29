@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import products from "../data/products"; // Make sure this is valid
+import products from "../data/products";
 import { useCart } from "../cartpro/CartContext";
 
 export default function SearchProPage() {
@@ -134,4 +134,4 @@ export default function SearchProPage() {
   );
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
