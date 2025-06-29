@@ -133,3 +133,5 @@ export default function SearchProPage() {
     </section>
   );
 }
+
+export const dynamic = 'force-dynamic';
