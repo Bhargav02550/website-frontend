@@ -7,6 +7,7 @@ import Address from "./Address";
 import { useRouter } from "next/navigation";
 import { useCart } from '../cartpro/CartContext';
 
+
 export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -90,12 +91,17 @@ export default function Header() {
               className="flex flex-col justify-center cursor-pointer w-1/2 max-w-[320px] truncate"
               onClick={() => setShowLocationPopup(true)}
             >
-              <span className="text-sm font-semibold text-black">Delivery in 24 Hours</span>
-              <span className="text-xs text-gray-600 truncate">
+              <span className="text-sm font-semibold text-black flex items-center">
+                Delivery in 24 Hours
+                <svg xmlns="http://www.w3.org/2000/svg" className="ml-1 w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+              <span className="text-xs text-gray-600 truncate flex items-center">
                 {location || "Choose location"}
               </span>
             </div>
-          </div>
+            </div>
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4 text-sm font-medium text-gray-800">
