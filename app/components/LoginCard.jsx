@@ -193,37 +193,35 @@ export default function LoginCard({ isOpen, onClose }) {
             </button>
           </div>
         ) : isNewUser ? (
-          <div className="animate-fade-in">
-            <input
-              type="text"
-              placeholder="First Name"
-              className="w-full px-3 py-2 mb-3 border border-none border-gray-300 rounded"
-              value={profile.firstName}
-              onChange={(e) =>
-                setProfile({ ...profile, firstName: e.target.value })
-              }
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              className="w-full px-3 py-2 mb-3 border border-none border-gray-300 rounded"
-              value={profile.lastName}
-              onChange={(e) =>
-                setProfile({ ...profile, lastName: e.target.value })
-              }
-            />
+          <div className="animate-fade-in space-y-4">
+            <div className="flex gap-4">
+              <input
+                type="text"
+                placeholder="First Name"
+                className="w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={profile.firstName}
+                onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                className="w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                value={profile.lastName}
+                onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+              />
+            </div>
+
             <input
               type="email"
               placeholder="Email"
-              className="w-full px-3 py-2 mb-4 border border-none border-gray-300 rounded"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               value={profile.email}
-              onChange={(e) =>
-                setProfile({ ...profile, email: e.target.value })
-              }
+              onChange={(e) => setProfile({ ...profile, email: e.target.value })}
             />
+
             <button
               onClick={handleSubmitProfile}
-              className="w-full bg-green-600 text-white cursor-pointer py-2 rounded hover:bg-green-700 transition"
+              className="w-full bg-green-600 text-white font-semibold cursor-pointer py-2 rounded-md hover:bg-green-700 transition disabled:opacity-50"
               disabled={loading}
             >
               {loading ? (
@@ -235,6 +233,7 @@ export default function LoginCard({ isOpen, onClose }) {
               )}
             </button>
           </div>
+
         ) : (
           <div className="animate-fade-in">
             <p className="text-sm text-gray-600 mb-2 text-center">
