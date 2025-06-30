@@ -43,6 +43,13 @@ export default function SearchProPage() {
     }
   };
 
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value >= 1) {
+      setQuantity(value);
+    }
+  };
+
   const modalTotal = selectedItem
     ? (parseFloat(selectedItem.price) * quantity).toFixed(2)
     : 0;
@@ -104,7 +111,15 @@ export default function SearchProPage() {
               >
                 -
               </button>
-              <span className="text-lg font-medium">{quantity} kg</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min="1"
+                className="w-20 text-center border rounded px-2 py-1 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance]:textfield"
+                value={quantity}
+                onChange={handleQuantityChange}
+              />
+
               <button
                 className="px-3 py-1 bg-gray-200 rounded text-lg"
                 onClick={() => setQuantity(quantity + 1)}
