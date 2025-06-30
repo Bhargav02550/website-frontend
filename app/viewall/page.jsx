@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import products from "../data/products";
 import { useCart } from "../cartpro/CartContext";
 
@@ -9,6 +9,7 @@ export default function ViewAll() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [isLogin , setIsLogin] = useState(false);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -31,6 +32,13 @@ export default function ViewAll() {
       setQuantity(value);
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      setIsLogin(!!token);
+    }
+  }, []);
 
   const modalTotal = selectedItem
     ? (parseFloat(selectedItem.price) * quantity).toFixed(2)
@@ -56,8 +64,8 @@ export default function ViewAll() {
             <h3 className="font-semibold text-lg">{item.name}</h3>
             <p className="text-sm text-gray-600 mb-3">₹{item.price}/kg</p>
             <button
-              className="mt-auto bg-green-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-              onClick={() => openModal(item)}
+              className={`mt-auto bg-green-600 ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} text-white px-4 py-2 rounded hover:bg-green-700 transition-colors`}
+              onClick={() => isLogin ? openModal(item) : ""}
             >
               Add to Cart
             </button>
@@ -111,13 +119,13 @@ export default function ViewAll() {
 
             <div className="flex justify-end space-x-2">
               <button
-                className="bg-gray-300 px-4 py-2 rounded"
+                className="bg-gray-300 cursor-pointer px-4 py-2 rounded"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                className="bg-green-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-green-700"
                 onClick={handleAddToCart}
               >
                 Add {quantity}kg

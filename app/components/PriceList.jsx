@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import products from "../data/products.json";
 import { useCart } from "../cartpro/CartContext";
@@ -12,6 +12,7 @@ export default function PriceList() {
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isLogin , setIsLogin] = useState(false);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -34,6 +35,13 @@ export default function PriceList() {
       setQuantity(value);
     }
   };
+
+  useEffect(() => {
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("token");
+        setIsLogin(!!token);
+      }
+    }, []);
 
   const modalTotal = selectedItem
     ? (parseFloat(selectedItem.price) * quantity).toFixed(2)
@@ -60,7 +68,7 @@ export default function PriceList() {
         {slideIndex > 0 && (
           <button
             onClick={() => setSlideIndex(slideIndex - 1)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow rounded-full p-2 hover:bg-gray-100"
+            className="absolute left-0 top-1/2 cursor-pointer -translate-y-1/2 z-10 bg-white shadow rounded-full p-2 hover:bg-gray-100"
           >
             <ChevronLeft />
           </button>
@@ -92,8 +100,8 @@ export default function PriceList() {
                     <h3 className="font-semibold text-lg">{item.name}</h3>
                     <p className="text-sm text-gray-600 mb-2">₹{item.price}/kg</p>
                     <button
-                      onClick={() => openModal(item)}
-                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                      onClick={() => isLogin ? openModal(item) : ""}
+                      className={`bg-green-600 text-white ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} px-4 py-2 rounded hover:bg-green-700 transition`}
                     >
                       Add to Cart
                     </button>
@@ -108,7 +116,7 @@ export default function PriceList() {
         {slideIndex < chunkedProducts.length - 1 && (
           <button
             onClick={() => setSlideIndex(slideIndex + 1)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow rounded-full p-2 hover:bg-gray-100"
+            className="absolute right-0 top-1/2 cursor-pointer -translate-y-1/2 z-10 bg-white shadow rounded-full p-2 hover:bg-gray-100"
           >
             <ChevronRight />
           </button>
@@ -155,13 +163,13 @@ export default function PriceList() {
 
             <div className="flex justify-end space-x-2">
               <button
-                className="bg-gray-300 px-4 py-2 rounded"
+                className="bg-gray-300 cursor-pointer px-4 py-2 rounded"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                className="bg-green-600 text-white cursor-pointer px-4 py-2 rounded hover:bg-green-700"
                 onClick={handleAddToCart}
               >
                 Add {quantity}kg
