@@ -189,8 +189,8 @@ export default function Header() {
               </button>
             )}
             <Link
-              href="/cart"
-              className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
+              href={`${isLogin ? "/cart" : ""}`}
+              className={`relative w-full flex items-center ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} justify-center bg-green-600 text-white px-4 py-2 rounded-lg`}
             >
               <Image src="/cart.png" alt="Cart" width={24} height={24} className="mr-2 w-6 h-6" />
               My Cart
