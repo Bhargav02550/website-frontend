@@ -2,20 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { Loader2 , ArrowLeft  } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function LoginCard({ isOpen, onClose }) {
   const modalRef = useRef();
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(["", "", "", ""]);
-  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [countdown, setCountdown] = useState(0);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "" });
+
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
-  // ESC + outside click to close
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
     const handleClickOutside = (e) => {
@@ -29,13 +30,11 @@ export default function LoginCard({ isOpen, onClose }) {
     };
   }, [onClose]);
 
-  // Lock scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => (document.body.style.overflow = "");
   }, [isOpen]);
 
-  // Countdown effect
   useEffect(() => {
     if (!otpSent || countdown === 0) return;
     const timer = setInterval(() => {
@@ -75,17 +74,52 @@ export default function LoginCard({ isOpen, onClose }) {
         contact: mobile,
         otp: otpValue,
       });
-      setToken(res.data.token);
+      localStorage.setItem('token', JSON.stringify(res.data.token));
       setMessage("Login successful");
-      setOtpSent(false); // Reset back to mobile screen
-      setOtp(["", "", "", ""]);
-      setMobile("");
-      setTimeout(() => onClose(), 1000);
+
+      if (res.data.isNew) {
+        setIsNewUser(true); // Show profile form
+      } else {
+        closeModalWithReset();
+      }
     } catch {
       setMessage("Invalid or expired OTP");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmitProfile = async () => {
+    const { firstName, lastName, email } = profile;
+    if (!firstName || !lastName || !email) {
+      return setMessage("Please fill all fields");
+    }
+    try {
+      setLoading(true);
+      await axios.post(`${backendApi}/completeProfile`, {
+        token: JSON.parse(localStorage.getItem("token")),
+        firstName,
+        lastName,
+        email,
+      });
+      setMessage("Profile completed");
+      closeModalWithReset();
+    } catch {
+      setMessage("Failed to submit profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const closeModalWithReset = () => {
+    setOtpSent(false);
+    setIsNewUser(false);
+    setOtp(["", "", "", ""]);
+    setMobile("");
+    setMessage("");
+    setProfile({ firstName: "", lastName: "", email: "" });
+    setCountdown(0);
+    setTimeout(() => onClose(), 1000);
   };
 
   const handleOtpChange = (index, value) => {
@@ -107,22 +141,28 @@ export default function LoginCard({ isOpen, onClose }) {
       >
         <button
           onClick={() => {
-            if (otpSent) {
-              setOtpSent(false);
-              setOtp(["", "", "", ""]);
-              setMessage("");
-              setCountdown(0);
-            } else {
-              onClose();
+              if (isNewUser) {
+                setIsNewUser(false);
+                setMessage("");
+              } 
+              else if (otpSent) {
+                setOtpSent(false);
+                setOtp(["", "", "", ""]);
+                setMessage("");
+                setCountdown(0);
+              } 
+              else {
+                onClose();
+              }
             }
-          }}
-          className="absolute top-4 cursor-pointer left-4 text-gray-500 hover:text-black text-xl"
+          }
+          className="absolute top-4 left-4 text-gray-500 hover:text-black text-xl"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
         <p className="text-center text-gray-800 font-semibold text-lg mb-4">
-          {otpSent ? "Enter OTP" : "Log in or Sign up"}
+          {!otpSent ? "Log in or Sign up" : isNewUser ? "Complete Profile" : "Enter OTP"}
         </p>
 
         {!otpSent ? (
@@ -149,6 +189,49 @@ export default function LoginCard({ isOpen, onClose }) {
                 </span>
               ) : (
                 "Continue"
+              )}
+            </button>
+          </div>
+        ) : isNewUser ? (
+          <div className="animate-fade-in">
+            <input
+              type="text"
+              placeholder="First Name"
+              className="w-full px-3 py-2 mb-3 border border-none border-gray-300 rounded"
+              value={profile.firstName}
+              onChange={(e) =>
+                setProfile({ ...profile, firstName: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              className="w-full px-3 py-2 mb-3 border border-none border-gray-300 rounded"
+              value={profile.lastName}
+              onChange={(e) =>
+                setProfile({ ...profile, lastName: e.target.value })
+              }
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full px-3 py-2 mb-4 border border-none border-gray-300 rounded"
+              value={profile.email}
+              onChange={(e) =>
+                setProfile({ ...profile, email: e.target.value })
+              }
+            />
+            <button
+              onClick={handleSubmitProfile}
+              className="w-full bg-green-600 text-white cursor-pointer py-2 rounded hover:bg-green-700 transition"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin w-4 h-4" /> Submitting...
+                </span>
+              ) : (
+                "Submit"
               )}
             </button>
           </div>
@@ -194,7 +277,9 @@ export default function LoginCard({ isOpen, onClose }) {
             <p className="text-xs text-center text-gray-500 mt-4">
               Didn’t receive OTP?{" "}
               {countdown > 0 ? (
-                <span className="text-red-500">Resend in {formatCountdown(countdown)}</span>
+                <span className="text-red-500">
+                  Resend in {formatCountdown(countdown)}
+                </span>
               ) : (
                 <span
                   className="text-blue-600 cursor-pointer hover:underline"

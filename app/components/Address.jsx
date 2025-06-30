@@ -6,7 +6,22 @@ import { X } from "lucide-react";
 export default function Address({ onLocationUpdate, isOpen, onClose }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
+  const updateAddress = async (address) => {
+    let token = localStorage.getItem("token");
+    if(token)
+    {
+      token = JSON.parse(token);
+      try{
+        const res = await axios.patch(`${backendApi}/addAddress`, {token , address });
+        console.log('update Address', res.message);
+      }
+      catch(err){
+        console.log('update Addess error: ', err.message);
+      }
+    }
+  }
   useEffect(() => {
     if (query.length < 3) return;
 
@@ -21,6 +36,7 @@ export default function Address({ onLocationUpdate, isOpen, onClose }) {
             limit: 5,
           },
         });
+
         const landmarkTypes = ["attraction", "monument", "museum", "historic", "building"];
         const sorted = [...res.data].sort((a, b) => {
           const isLandmarkA = landmarkTypes.includes(a.type);
@@ -69,6 +85,7 @@ export default function Address({ onLocationUpdate, isOpen, onClose }) {
 
           const parsed = extractAddress(res.data);
           localStorage.setItem("user-location", JSON.stringify(parsed));
+          if(res.data) await updateAddress(res.data?.full);
           onLocationUpdate?.(parsed);
           onClose(); // close popup
         } catch (err) {
@@ -79,10 +96,11 @@ export default function Address({ onLocationUpdate, isOpen, onClose }) {
     );
   };
 
-  const handleSelectSuggestion = (place) => {
+  const handleSelectSuggestion = async (place) => {
     const parsed = extractAddress(place);
     localStorage.setItem("user-location", JSON.stringify(parsed));
     onLocationUpdate?.(parsed);
+    await updateAddress(parsed?.full)
     onClose(); // close popup
   };
 
