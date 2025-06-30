@@ -18,6 +18,13 @@ export default function CartPage() {
     0
   );
 
+  const handleQuantityInput = (e, item) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value >= 1) {
+      addToCart({ ...item, quantity: value });
+    }
+  };
+
   const handleCheckout = () => {
     router.push('/checkout');
   };
@@ -30,8 +37,20 @@ export default function CartPage() {
         <p className="text-gray-600">Your cart is empty.</p>
       ) : (
         <>
-          {/* Scrollable Cart Items */}
-          <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scroll">
+          {/* Cart Items Scroll Area */}
+          <div
+            className="flex-1 overflow-y-auto pr-2 space-y-4"
+            style={{
+              scrollbarWidth: 'none', // Firefox
+              msOverflowStyle: 'none', // IE 10+
+            }}
+          >
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+
             {cartItems.map((item) => (
               <div
                 key={item.name}
@@ -58,7 +77,14 @@ export default function CartPage() {
                   >
                     -
                   </button>
-                  <span className="min-w-[40px] text-center">{item.quantity} kg</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={item.quantity}
+                    onChange={(e) => handleQuantityInput(e, item)}
+                    className="w-16 text-center border rounded px-2 py-1"
+                  />
                   <button
                     onClick={() => incrementQuantity(item)}
                     className="bg-gray-200 px-2 py-1 rounded"
@@ -76,8 +102,8 @@ export default function CartPage() {
             ))}
           </div>
 
-          {/* Total and Checkout */}
-          <div className="mt-6 text-right border-t pt-4">
+          {/* Total & Checkout Section */}
+          <div className="mt-6 pt-6 border-t border-dashed border-gray-300 text-right">
             <div className="text-lg font-semibold mb-3">
               Total: ₹{totalPrice.toFixed(2)}
             </div>
