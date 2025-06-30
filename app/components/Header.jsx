@@ -59,8 +59,8 @@ export default function Header() {
             <Image
               src="/logo-P.png"
               alt="Go-Vigi Logo"
-              width={40}
-              height={40}
+              width={500}
+              height={500}
               className="h-11 w-11 object-contain"
             />
             <span className="text-2xl font-bold text-green-600">Go-vigi</span>

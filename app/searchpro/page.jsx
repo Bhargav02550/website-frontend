@@ -14,6 +14,7 @@ export default function SearchProPage() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [isLogin , setIsLogin] = useState(false);
 
   useEffect(() => {
     const searchQuery = searchParams.get("query")?.toLowerCase() || "";
@@ -27,6 +28,13 @@ export default function SearchProPage() {
 
     setFilteredResults(results);
   }, [searchParams]);
+
+  useEffect(() => {
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("token");
+        setIsLogin(!!token);
+      }
+    }, []);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -75,8 +83,8 @@ export default function SearchProPage() {
               <h3 className="font-semibold text-lg">{item.name}</h3>
               <p className="text-sm text-gray-600 mb-3">₹{item.price}/kg</p>
               <button
-                className="mt-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
-                onClick={() => openModal(item)}
+                className={`mt-auto bg-green-600 text-white ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} px-4 py-2 rounded hover:bg-green-700 transition-colors`}
+                onClick={() => isLogin ? openModal(item) : ""}
               >
                 Add to Cart
               </button>
@@ -130,13 +138,13 @@ export default function SearchProPage() {
 
             <div className="flex justify-end space-x-2">
               <button
-                className="bg-gray-300 px-4 py-2 rounded"
+                className="bg-gray-300 cursor-pointer px-4 py-2 rounded"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                className="bg-green-600 cursor-pointer text-white px-4 py-2 rounded hover:bg-green-700"
                 onClick={handleAddToCart}
               >
                 Add {quantity}kg
