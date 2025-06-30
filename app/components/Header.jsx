@@ -5,14 +5,14 @@ import LoginCard from "../components/LoginCard";
 import React, { useEffect, useState } from "react";
 import Address from "./Address";
 import { useRouter } from "next/navigation";
-import { useCart } from '../cartpro/CartContext';
-
+import { useCart } from "../cartpro/CartContext";
 
 export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [location, setLocation] = useState("");
+  const [isLogin, setIsLogin] = useState(false);
   const { cartItems } = useCart();
   const cartCount = cartItems.length;
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,29 +26,34 @@ export default function Header() {
     }
   };
 
-  useEffect(() => {
-    const saved = localStorage.getItem("user-location");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setLocation(formatLocation(parsed));
-      } catch (e) {
-        console.error("Invalid location data:", e);
-      }
-    }
-  }, []);
-
   const formatLocation = (locObj) => {
     if (!locObj) return "";
     const { city, state } = locObj;
     return [city, state].filter(Boolean).join(", ");
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("user-location");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setLocation(formatLocation(parsed));
+        } catch (e) {
+          console.error("Invalid location data:", e);
+        }
+      }
+
+      const token = localStorage.getItem("token");
+      setIsLogin(!!token);
+    }
+  }, []);
+
   return (
     <>
       <nav className="h-20 bg-white/20 backdrop-blur-md shadow-sm sticky top-0 z-50 w-full border-b border-gray-200 transition duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-          
+
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image
@@ -63,8 +68,7 @@ export default function Header() {
 
           {/* Search + Location wrapper (Desktop) */}
           <div className="hidden md:flex flex-1 px-6 gap-6 items-center">
-            
-            {/* Reduced width Search bar */}
+            {/* Search Bar */}
             <form onSubmit={handleSearch} className="hidden md:flex w-full">
               <div className="relative w-full">
                 <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
@@ -72,8 +76,7 @@ export default function Header() {
                     viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
                     className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
-                    />
+                      d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
                   </svg>
                 </span>
                 <input
@@ -86,7 +89,7 @@ export default function Header() {
               </div>
             </form>
 
-            {/* Increased width Location */}
+            {/* Location */}
             <div
               className="flex flex-col justify-center cursor-pointer w-1/2 max-w-[320px] truncate"
               onClick={() => setShowLocationPopup(true)}
@@ -97,25 +100,32 @@ export default function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </span>
-              <span className="text-xs text-gray-600 truncate flex items-center">
+              <span className="text-xs text-gray-600 truncate">
                 {location || "Choose location"}
               </span>
             </div>
-            </div>
+          </div>
 
-          {/* Desktop Buttons */}
+          {/* Buttons */}
           <div className="hidden md:flex items-center space-x-4 text-sm font-medium text-gray-800">
-            <button
-              onClick={() => setShowLogin(true)}
-              className="h-12 flex items-center cursor-pointer space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
-            >
-              <Image src="/User1.png" alt="Login" width={20} height={20} className="w-5 h-5" />
-              <span>Login</span>
-            </button>
+            {isLogin ? (
+              <Link href="/profile" className="h-12 flex items-center space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg">
+                <Image src="/User1.png" alt="Profile" width={20} height={20} className="w-5 h-5" />
+                <span>Profile</span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => setShowLogin(true)}
+                className="h-12 flex items-center space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
+              >
+                <Image src="/User1.png" alt="Login" width={20} height={20} className="w-5 h-5" />
+                <span>Login</span>
+              </button>
+            )}
 
             <Link
-              href="/cart"
-              className="relative h-12 flex items-center space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
+              href={` ${isLogin ? "/cart" : "/"} `}
+              className={`relative h-12 flex items-center ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg`}
             >
               <Image src="/cart.png" alt="Cart" width={24} height={24} className="w-6 h-6" />
               <span>My Cart</span>
@@ -127,11 +137,10 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <div className="md:hidden">
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-gray-800 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -162,17 +171,23 @@ export default function Header() {
                 {location || "Choose location"}
               </span>
             </div>
-            <button
-              onClick={() => {
-                setShowLogin(true);
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
-            >
-              <Image src="/User1.png" alt="Login" width={20} height={20} className="mr-2 w-5 h-5" />
-              Login
-            </button>
-
+            {isLogin ? (
+              <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg">
+                <Image src="/User1.png" alt="Profile" width={20} height={20} className="mr-2 w-5 h-5" />
+                Profile
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setShowLogin(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
+              >
+                <Image src="/User1.png" alt="Login" width={20} height={20} className="mr-2 w-5 h-5" />
+                Login
+              </button>
+            )}
             <Link
               href="/cart"
               className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
@@ -198,9 +213,11 @@ export default function Header() {
           isOpen={showLocationPopup}
           onClose={() => setShowLocationPopup(false)}
           onLocationUpdate={(newLoc) => {
-            localStorage.setItem("user-location", JSON.stringify(newLoc));
-            setLocation(formatLocation(newLoc));
-            setShowLocationPopup(false);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("user-location", JSON.stringify(newLoc));
+              setLocation(formatLocation(newLoc));
+              setShowLocationPopup(false);
+            }
           }}
         />
       )}
