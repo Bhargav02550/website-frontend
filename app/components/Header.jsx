@@ -6,19 +6,20 @@ import React, { useEffect, useState } from "react";
 import Address from "./Address";
 import { useRouter } from "next/navigation";
 import { useCart } from "../cartpro/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [location, setLocation] = useState("");
-  const [isLogin, setIsLogin] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const { cartItems } = useCart();
   const cartCount = cartItems.length;
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-
+  const { isAuthenticated, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -45,9 +46,6 @@ export default function Header() {
           console.error("Invalid location data:", e);
         }
       }
-
-      const token = localStorage.getItem("token");
-      setIsLogin(!!token);
     }
   }, []);
 
@@ -121,7 +119,7 @@ export default function Header() {
 
           {/* Buttons */}
           <div className="hidden md:flex items-center space-x-4 text-sm font-medium text-gray-800">
-            {isLogin ? (
+            {isAuthenticated ? (
              <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown((prev) => !prev)}
@@ -135,17 +133,15 @@ export default function Header() {
                 </button>
 
                 {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
+                  <div className="profile-dropdown absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
                     <Link href="/profile" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">My Account</Link>
                     <Link href="/saved-address" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Saved Address</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">My Orders</Link>
                     <button
                       onClick={() => {
-                        localStorage.removeItem("token");
-                        setIsLogin(false);
-                        router.push("/");
+                        setShowLogoutConfirm(true);
                       }}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      className="block w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                     >
                       Logout
                     </button>
@@ -165,7 +161,7 @@ export default function Header() {
 
             <button
               onClick={() => {
-                if (!isLogin) {
+                if (!isAuthenticated) {
                   setShowLogin(true);
                 } else {
                   router.push("/cart");
@@ -218,7 +214,7 @@ export default function Header() {
                 {location || "Choose location"}
               </span>
             </div>
-            {isLogin ? (
+            {isAuthenticated ? (
               <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg">
                 <Image src="/User1.png" alt="Profile" width={20} height={20} className="mr-2 w-5 h-5" />
                 Profile
@@ -235,7 +231,7 @@ export default function Header() {
                 Login
               </button>
             )}
-            {isLogin ? (
+            {isAuthenticated ? (
               <Link
                 href="/cart"
                 className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
@@ -284,6 +280,53 @@ export default function Header() {
           }}
         />
       )}
+
+      {/* Confirm logout page */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-black/40 backdrop-blur-sm">
+          <div className="animate-slide-down bg-white p-6 rounded-xl shadow-xl w-full max-w-sm text-center">
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">
+              Are you sure you want to logout?
+            </h2>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => {
+                  logout();
+                  setShowLogoutConfirm(false);
+                  router.push("/");
+                }}
+                className="px-4 py-2 bg-red-600 cursor-pointer text-white rounded-md hover:bg-red-700 transition"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 bg-gray-300 cursor-pointer text-gray-800 rounded-md hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <style jsx>{`
+            .animate-slide-down {
+              animation: slideDownFade 0.3s ease-out forwards;
+            }
+
+            @keyframes slideDownFade {
+              0% {
+                opacity: 0;
+                transform: translateY(-20px);
+              }
+              100% {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
+        </div>
+      )}
+
     </>
   );
 }

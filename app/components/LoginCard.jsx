@@ -3,17 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginCard({ isOpen, onClose }) {
   const modalRef = useRef();
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(["", "", "", ""]);
+  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [countdown, setCountdown] = useState(0);
   const [isNewUser, setIsNewUser] = useState(false);
   const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "" });
+  const { login } = useAuth();
 
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
@@ -74,12 +77,13 @@ export default function LoginCard({ isOpen, onClose }) {
         contact: mobile,
         otp: otpValue,
       });
-      localStorage.setItem('token', JSON.stringify(res.data.token));
       setMessage("Login successful");
 
       if (res.data.isNew) {
-        setIsNewUser(true); // Show profile form
+        setIsNewUser(true);
+        setToken(res.data?.token);
       } else {
+        login(res.data.token);
         closeModalWithReset();
       }
     } catch {
@@ -97,12 +101,13 @@ export default function LoginCard({ isOpen, onClose }) {
     try {
       setLoading(true);
       await axios.post(`${backendApi}/completeProfile`, {
-        token: JSON.parse(localStorage.getItem("token")),
+        token,
         firstName,
         lastName,
         email,
       });
       setMessage("Profile completed");
+      login(token);
       closeModalWithReset();
     } catch {
       setMessage("Failed to submit profile");

@@ -2,17 +2,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Address({ onLocationUpdate, isOpen, onClose }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
+  const { isAuthenticated, logout } = useAuth();
+  
 
   const updateAddress = async (address) => {
-    let token = localStorage.getItem("token");
-    if(token)
+    if(isAuthenticated)
     {
-      token = JSON.parse(token);
+      const token = JSON.parse(localStorage.getItem("token"));
+      if (!token) return;
       try{
         const res = await axios.patch(`${backendApi}/addAddress`, {token , address });
         console.log('update Address', res.message);
@@ -85,7 +88,7 @@ export default function Address({ onLocationUpdate, isOpen, onClose }) {
 
           const parsed = extractAddress(res.data);
           localStorage.setItem("user-location", JSON.stringify(parsed));
-          if(res.data) await updateAddress(res.data?.full);
+          if(res.data) await updateAddress(parsed?.full);
           onLocationUpdate?.(parsed);
           onClose(); // close popup
         } catch (err) {
