@@ -12,7 +12,7 @@ export default function PriceList() {
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
-  const [isLogin , setIsLogin] = useState(false);
+  // const [isLogin, setIsLogin] = useState(false);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -36,17 +36,18 @@ export default function PriceList() {
     }
   };
 
-  useEffect(() => {
-      if (typeof window !== "undefined") {
-        const token = localStorage.getItem("token");
-        setIsLogin(!!token);
-      }
-    }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const token = localStorage.getItem("token");
+  //     setIsLogin(!!token);
+  //   }
+  // }, []);
 
   const modalTotal = selectedItem
     ? (parseFloat(selectedItem.price) * quantity).toFixed(2)
     : 0;
 
+  // Only use first 8 products
   const chunkedProducts = [products.slice(0, 4), products.slice(4, 8)];
 
   return (
@@ -64,18 +65,8 @@ export default function PriceList() {
 
       {/* Carousel */}
       <div className="relative">
-        {/* Left Arrow */}
-        {slideIndex > 0 && (
-          <button
-            onClick={() => setSlideIndex(slideIndex - 1)}
-            className="absolute left-0 top-1/2 cursor-pointer -translate-y-1/2 z-10 bg-white shadow rounded-full p-2 hover:bg-gray-100"
-          >
-            <ChevronLeft />
-          </button>
-        )}
-
         {/* Slide Content */}
-        <div className="p-2 overflow-hidden ">
+        <div className="p-2 overflow-hidden">
           <div
             className="flex transition-transform duration-500"
             style={{ transform: `translateX(-${slideIndex * 100}%)` }}
@@ -83,25 +74,25 @@ export default function PriceList() {
             {chunkedProducts.map((group, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full flex-shrink-0"
+                className="grid grid-cols-2 grid-rows-2 md:grid-cols-4 md:grid-rows-1 gap-6 w-full flex-shrink-0"
               >
                 {group.map((item) => (
                   <div
                     key={item.name}
                     className="p-4 border border-gray-100 rounded-xl text-center shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:scale-105 hover:shadow-[0_4px_12px_2px_rgba(0,0,0,0.12)] hover:border-green-500 transition-all duration-300 flex flex-col justify-between bg-white"
-
                   >
-
                     <img
                       src={item.image}
                       alt={item.name}
                       className="mx-auto object-contain mb-4 h-32 w-32"
                     />
                     <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">₹{item.price}/kg</p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      ₹{item.price}/kg
+                    </p>
                     <button
-                      onClick={() => isLogin ? openModal(item) : ""}
-                      className={`bg-green-600 text-white ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} px-4 py-2 rounded hover:bg-green-700 transition`}
+                      onClick={() =>openModal(item) }
+                      className={`bg-green-600 text-white cursor-pointer px-4 py-2 rounded hover:bg-green-700 transition`}
                     >
                       Add to Cart
                     </button>
@@ -112,15 +103,31 @@ export default function PriceList() {
           </div>
         </div>
 
-        {/* Right Arrow */}
-        {slideIndex < chunkedProducts.length - 1 && (
-          <button
-            onClick={() => setSlideIndex(slideIndex + 1)}
-            className="absolute right-0 top-1/2 cursor-pointer -translate-y-1/2 z-10 bg-white shadow rounded-full p-2 hover:bg-gray-100"
-          >
-            <ChevronRight />
-          </button>
-        )}
+        {/* Slide Arrows - Bottom on mobile, sides on desktop */}
+<>
+  {/* Left Arrow */}
+  {slideIndex > 0 && (
+    <button
+      onClick={() => setSlideIndex(slideIndex - 1)}
+      className="absolute top-1/2 -translate-y-1/2 z-10
+             left-4 md:left-0 bg-white shadow rounded-full p-2 hover:bg-gray-100"
+    >
+      <ChevronLeft />
+    </button>
+  )}
+
+  {/* Right Arrow */}
+  {slideIndex < chunkedProducts.length - 1 && (
+    <button
+      onClick={() => setSlideIndex(slideIndex + 1)}
+      className="absolute top-1/2 -translate-y-1/2 z-10
+             right-4 md:right-0 bg-white shadow rounded-full p-2 hover:bg-gray-100"
+    >
+      <ChevronRight />
+    </button>
+  )}
+</>
+
       </div>
 
       {/* Modal */}
@@ -133,7 +140,9 @@ export default function PriceList() {
               className="mx-auto h-28 w-28 object-contain mb-4"
             />
             <h3 className="text-xl font-bold mb-1">{selectedItem.name}</h3>
-            <p className="text-gray-600 mb-1">Price: ₹{selectedItem.price}/kg</p>
+            <p className="text-gray-600 mb-1">
+              Price: ₹{selectedItem.price}/kg
+            </p>
             <p className="text-gray-800 font-medium mb-4">
               Total: ₹{modalTotal}
             </p>
