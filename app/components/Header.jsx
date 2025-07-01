@@ -13,10 +13,12 @@ export default function Header() {
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [location, setLocation] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const { cartItems } = useCart();
   const cartCount = cartItems.length;
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -49,6 +51,17 @@ export default function Header() {
     }
   }, []);
 
+  useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (!e.target.closest(".profile-dropdown")) {
+      setShowProfileDropdown(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+
   return (
     <>
       <nav className="h-20 bg-white/20 backdrop-blur-md shadow-sm sticky top-0 z-50 w-full border-b border-gray-200 transition duration-300">
@@ -67,9 +80,9 @@ export default function Header() {
           </Link>
 
           {/* Search + Location wrapper (Desktop) */}
-          <div className="hidden md:flex flex-1 px-6 gap-6 items-center">
+          <div className="hidden md:flex flex-1 px-6 gap-8 items-center pointer-events-none">
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="hidden md:flex w-full">
+            <form onSubmit={handleSearch} className="hidden md:flex w-full pointer-events-auto">
               <div className="relative w-full">
                 <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -91,7 +104,7 @@ export default function Header() {
 
             {/* Location */}
             <div
-              className="flex flex-col justify-center cursor-pointer w-1/2 max-w-[320px] truncate"
+              className="flex flex-col justify-center cursor-pointer w-[230px] truncate pointer-events-auto"
               onClick={() => setShowLocationPopup(true)}
             >
               <span className="text-sm font-semibold text-black flex items-center">
@@ -109,23 +122,56 @@ export default function Header() {
           {/* Buttons */}
           <div className="hidden md:flex items-center space-x-4 text-sm font-medium text-gray-800">
             {isLogin ? (
-              <Link href="/profile" className="h-12 flex items-center space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg">
-                <Image src="/User1.png" alt="Profile" width={20} height={20} className="w-5 h-5" />
-                <span>Profile</span>
-              </Link>
+             <div className="relative">
+                <button
+                  onClick={() => setShowProfileDropdown((prev) => !prev)}
+                  className="h-12 flex items-center cursor-pointer space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
+                >
+                  <Image src="/User1.png" alt="Profile" width={20} height={20} className="w-5 h-5" />
+                  <span>Profile</span>
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {showProfileDropdown && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
+                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">My Account</Link>
+                    <Link href="/saved-address" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Saved Address</Link>
+                    <Link href="/orders" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">My Orders</Link>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        setIsLogin(false);
+                        router.push("/");
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="h-12 flex items-center space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
+                className="h-12 flex items-center space-x-2 cursor-pointer bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
               >
                 <Image src="/User1.png" alt="Login" width={20} height={20} className="w-5 h-5" />
                 <span>Login</span>
               </button>
             )}
 
-            <Link
-              href={` ${isLogin ? "/cart" : "/"} `}
-              className={`relative h-12 flex items-center ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg`}
+            <button
+              onClick={() => {
+                if (!isLogin) {
+                  setShowLogin(true);
+                } else {
+                  router.push("/cart");
+                }
+              }}
+              className="relative h-12 flex items-center cursor-pointer space-x-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-lg"
             >
               <Image src="/cart.png" alt="Cart" width={24} height={24} className="w-6 h-6" />
               <span>My Cart</span>
@@ -134,7 +180,8 @@ export default function Header() {
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
+
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -188,18 +235,34 @@ export default function Header() {
                 Login
               </button>
             )}
-            <Link
-              href={`${isLogin ? "/cart" : ""}`}
-              className={`relative w-full flex items-center ${isLogin ? "cursor-pointer" : "cursor-not-allowed"} justify-center bg-green-600 text-white px-4 py-2 rounded-lg`}
-            >
-              <Image src="/cart.png" alt="Cart" width={24} height={24} className="mr-2 w-6 h-6" />
-              My Cart
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-4 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {cartCount}
-                </span>
+            {isLogin ? (
+              <Link
+                href="/cart"
+                className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
+              >
+                <Image src="/cart.png" alt="Cart" width={24} height={24} className="mr-2 w-6 h-6" />
+                My Cart
+                {cartCount > 0 && (
+                  <span className="absolute top-0 right-4 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    {cartCount}
+                  </span>
+                )}
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="relative w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg"
+                >
+                  <Image src="/cart.png" alt="Cart" width={24} height={24} className="mr-2 w-6 h-6" />
+                  My Cart
+                  {cartCount > 0 && (
+                    <span className="absolute top-0 right-4 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
               )}
-            </Link>
+
           </div>
         )}
       </nav>
