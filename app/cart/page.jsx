@@ -93,7 +93,7 @@ export default function CartPage() {
                   </button>
                   <button
                     onClick={() => removeFromCart(item)}
-                    className="text-red-500 hover:underline text-xs sm:text-sm ml-2"
+                    className="text-red-500 cursor-pointer hover:underline text-xs sm:text-sm ml-2"
                   >
                     Remove
                   </button>
@@ -108,7 +108,7 @@ export default function CartPage() {
               Total: ₹{totalPrice.toFixed(2)}
             </div>
             <button
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              className="bg-green-600 hover:bg-green-700 cursor-pointer text-white font-semibold px-6 py-3 rounded-lg transition-colors"
               onClick={handleCheckout}
             >
               Checkout

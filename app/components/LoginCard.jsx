@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 export default function LoginCard({ isOpen, onClose }) {
   const modalRef = useRef();
@@ -17,6 +18,7 @@ export default function LoginCard({ isOpen, onClose }) {
   const [isNewUser, setIsNewUser] = useState(false);
   const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "" });
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
@@ -50,13 +52,12 @@ export default function LoginCard({ isOpen, onClose }) {
     if (mobile.length !== 10) return setMessage("Enter a valid mobile number");
     try {
       setLoading(true);
-      setMessage("");
       await axios.post(`${backendApi}/sendOTP`, { contact: mobile });
       setOtpSent(true);
-      setMessage("OTP sent to your number.");
+      showToast("OTP sent to your number.", "success");
       setCountdown(300);
     } catch {
-      setMessage("Failed to send OTP");
+      showToast("Failed to send OTP", "red");
     } finally {
       setLoading(false);
     }
@@ -77,7 +78,7 @@ export default function LoginCard({ isOpen, onClose }) {
         contact: mobile,
         otp: otpValue,
       });
-      setMessage("Login successful");
+      showToast("Login successful", "red");
 
       if (res.data.isNew) {
         setIsNewUser(true);
@@ -87,7 +88,7 @@ export default function LoginCard({ isOpen, onClose }) {
         closeModalWithReset();
       }
     } catch {
-      setMessage("Invalid or expired OTP");
+      showToast("Invalid or expired OTP", "warning");
     } finally {
       setLoading(false);
     }
@@ -163,7 +164,7 @@ export default function LoginCard({ isOpen, onClose }) {
           }
           className="absolute top-4 left-4 text-gray-500 hover:text-black text-xl"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5 cursor-pointer" />
         </button>
 
         <p className="text-center text-gray-800 font-semibold text-lg mb-4">
