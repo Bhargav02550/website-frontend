@@ -174,7 +174,7 @@ export default function CheckoutPage() {
         {(!showNewAddressForm && addresses.length <= 2) && (
           <div
             onClick={() => setShowNewAddressForm(true)}
-            className="cursor-pointer border-2 border-dashed rounded-xl p-5 flex items-center justify-center text-center text-green-600 hover:bg-green-50 hover:border-green-400 transition"
+            className="cursor-pointer border-2 border-dashed rounded-xl p-5 flex items-center justify-center text-center text-green-600 hover:bg-green-50 hover:border-green-400 max-h-[160px] overflow-hidden transition"
           >
             <div>
               <div className="text-4xl mb-1">＋</div>
