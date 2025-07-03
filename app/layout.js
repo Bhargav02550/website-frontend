@@ -20,6 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Go-Vigi",
   description: "Experience the convenience of online vegetable ordering tailored for restaurants, canteens, and more. Enjoy fresh produce delivered directly to your business, ensuring quality and efficiency.",
+  keywords: ["agri tech company", "e-commerce", "online shopping", "shopping application"],
   icons: {
     icon: "/logo-P.png",
   },
@@ -28,12 +29,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <Head>
-        <title>{metadata.title}</title>
-        <link rel="icon" type="image/x-icon" href={metadata.icons.icon}/>
-        <meta name="keywords" content="agri tech company, e-commerce, online shopping, shopping application"/>
-        <meta name="description" content={metadata.description} />
-      </Head>
+      <head/>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ToastProvider>
           <AuthProvider>
