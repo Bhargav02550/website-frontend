@@ -23,7 +23,21 @@ export const metadata = {
   keywords: ["agri tech company", "e-commerce", "online shopping", "shopping application"],
   icons: {
     icon: "/logo-P.png",
-  }
+  },
+   openGraph: {
+    title: "Go-Vigi",
+    description: "Experience the convenience of online vegetable ordering tailored for restaurants, canteens, and more. Enjoy fresh produce delivered directly to your business, ensuring quality and efficiency.",
+    url: "https://www.govigi.com",
+    siteName: "Go-Vigi",
+    images: [
+      {
+        url: "/logo-P.png",
+        width: 800,
+        height: 600,
+      },
+    ],
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
