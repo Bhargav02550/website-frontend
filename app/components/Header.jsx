@@ -63,7 +63,7 @@ export default function Header() {
   return (
     <>
       <nav className="h-20 bg-white/20 backdrop-blur-md shadow-sm sticky top-0 z-50 w-full border-b border-gray-200 transition duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+        <div className="max-w mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
 
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
@@ -72,13 +72,13 @@ export default function Header() {
               alt="Go-Vigi Logo"
               width={500}
               height={500}
-              className="h-11 w-11 object-contain"
+              className="h-12 w-12 object-contain"
             />
             <span className="text-2xl font-bold text-green-600">Go-vigi</span>
           </Link>
 
           {/* Search + Location wrapper (Desktop) */}
-          <div className="hidden md:flex flex-1 px-6 gap-8 items-center pointer-events-none">
+          <div className="hidden md:flex flex-1 px-3 gap-8 items-center pointer-events-none">
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="hidden md:flex w-full pointer-events-auto">
               <div className="relative w-full">
