@@ -21,9 +21,10 @@ export default function ProductCard({ item, onAddToCart }) {
 
   return (
     <div
-      className="bg-white rounded-2xl shadow p-4 w-full max-w-xs text-center flex flex-col items-center space-y-2 
-      border border-transparent hover:border-green-500 
-      transition-[transform,box-shadow,border-color] duration-200 ease-in-out hover:scale-[1.01] hover:shadow-lg"
+      className="bg-white rounded-2xl shadow p-4 w-full max-w-xs text-center flex flex-col justify-between h-full
+      border border-transparent hover:border-green-500 hover:scale-[1.01] hover:shadow-lg
+      focus-within:border-green-500 focus-within:scale-[1.01] focus-within:shadow-lg
+      transition-all duration-200 ease-in-out"
     >
       {/* Popup */}
       {showPopup && (
@@ -33,28 +34,32 @@ export default function ProductCard({ item, onAddToCart }) {
       )}
 
       {/* Product Image */}
-      <img
-        src={item.image}
-        alt={item.name}
-        className="w-32 h-32 object-contain"
-      />
-
-      {/* Name & Price */}
-      <div className="flex justify-between items-center w-full px-2 mt-2">
-        <h3 className="font-semibold text-lg">{item.name}</h3>
-        <p className="font-semibold text-gray-700">₹{item.price}/Kg</p>
+      <div className="flex justify-center items-center w-full h-28 mb-2">
+        <img
+          src={item.image}
+          alt={item.name}
+          className="w-28 h-28 object-contain"
+        />
       </div>
 
-      {/* Rating */}
-      <div className="flex items-center justify-start w-full px-2 text-sm text-gray-600">
+      {/* Name & Price in one line */}
+      <div className="flex justify-between items-center w-full px-2 mt-1">
+        <h3 className="font-bold text-sm truncate max-w-[65%]">{item.name}</h3>
+        <p className="text-sm text-gray-700 font-semibold whitespace-nowrap">
+          ₹{item.price}/Kg
+        </p>
+      </div>
+
+      {/* Rating - smaller reviews text */}
+      <div className="flex items-center justify-center text-xs text-gray-600 mt-1">
         <span className="text-yellow-400 mr-1">★★★★☆</span>
-        <span>(88 reviews)</span>
+        <span className="text-[11px]">(88 reviews)</span>
       </div>
 
       {/* Quantity + Add Button */}
-      <div className="flex items-center justify-between w-full mt-2 space-x-2">
+      <div className="flex items-center justify-between mt-3 gap-2 w-full max-w-[200px] mx-auto">
         {/* Quantity Controls */}
-        <div className="flex items-center space-x-1 text-sm sm:text-base">
+        <div className="flex items-center space-x-1 text-sm">
           <button
             onClick={decrement}
             className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold"
@@ -76,13 +81,13 @@ export default function ProductCard({ item, onAddToCart }) {
           </button>
         </div>
 
-        {/* Responsive Add to Cart Button */}
+        {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          className="bg-green-600 hover:bg-green-700 text-white font-medium px-2 sm:px-3 py-1.5 rounded text-sm whitespace-nowrap"
+          className="bg-green-600 hover:bg-green-700 text-white font-medium px-3 py-1.5 rounded text-sm"
         >
-          <span className="block sm:hidden">Add</span> {/* Mobile */}
-          <span className="hidden sm:block">Add to cart</span> {/* Desktop */}
+          <span className="block sm:hidden">Add</span>
+          <span className="hidden sm:block">Add to cart</span>
         </button>
       </div>
     </div>
