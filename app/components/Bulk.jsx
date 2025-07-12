@@ -27,12 +27,13 @@ export default function Bulk() {
         />
 
 
-        <button className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2">
-          <ChevronLeft />
-        </button>
-        <button className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2">
-          <ChevronRight />
-        </button>
+        <button className="absolute left-4 top-[30%] md:top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2">
+        <ChevronLeft />
+      </button>
+      <button className="absolute right-4 top-[30%] md:top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2">
+        <ChevronRight />
+      </button>
+
       </div>
 
  

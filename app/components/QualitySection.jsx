@@ -43,7 +43,7 @@ export default function QualitySection() {
         {/* Right: Overlapping Images */}
         <div className="flex-1 relative flex justify-center items-center h-[220px] sm:h-[240px] w-full overflow-visible">
           {/* Left image */}
-          <div className="absolute left-[10px] sm:left-[45px] w-[200px] sm:w-[250px] h-[140px] sm:h-[170px] rounded-xl overflow-hidden z-10 blur-[1.5px]">
+          <div className="absolute left-[8px] sm:left-[45px] w-[200px] sm:w-[250px] h-[140px] sm:h-[170px] rounded-xl overflow-hidden z-10 blur-[1.5px]">
             <Image
               src="/qs3.jpg"
               alt="Side left"
@@ -63,7 +63,7 @@ export default function QualitySection() {
           </div>
 
           {/* Right image */}
-          <div className="absolute right-[10px] sm:right-[45px] w-[200px] sm:w-[250px] h-[140px] sm:h-[170px] rounded-xl overflow-hidden z-10 blur-[1.5px]">
+          <div className="absolute right-[8px] sm:right-[45px] w-[200px] sm:w-[250px] h-[140px] sm:h-[170px] rounded-xl overflow-hidden z-10 blur-[1.5px]">
             <Image
               src="/qs1.jpg"
               alt="Side right"
