@@ -23,10 +23,10 @@ export function CartProvider({ children }) {
   // Replace quantity if item exists, otherwise add new item
   const addToCart = (item) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((i) => i.id === item.id);
+      const existingItem = prevCart.find((i) => i._id === item._id);
       if (existingItem) {
         return prevCart.map((i) =>
-          i.id === item.id ? { ...i, quantity: item.quantity || 1 } : i
+          i._id === item._id ? { ...i, quantity: item.quantity || 1 } : i
         );
       } else {
         return [...prevCart, { ...item, quantity: item.quantity || 1 }];

@@ -31,8 +31,7 @@ export default function ViewAll() {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
-        const data = await res.json();
-        setProducts(data);
+        setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err);
       }
