@@ -56,7 +56,7 @@ export default function PriceList() {
         <h2 className="text-2xl font-bold">{category}</h2>
         <Link
           href="/viewall"
-          className="text-green-600 hover:underline font-medium"
+          className="text-green-600 cursor-pointer font-medium"
         >
           View all
         </Link>

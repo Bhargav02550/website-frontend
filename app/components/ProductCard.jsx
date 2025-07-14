@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useToast } from "../context/ToastContext";
 
 export default function ProductCard({ item, onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
-  const [showPopup, setShowPopup] = useState(false);
+  const { showToast} = useToast();
 
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
@@ -15,8 +16,7 @@ export default function ProductCard({ item, onAddToCart }) {
   const handleAddToCart = () => {
     onAddToCart({ ...item, quantity });
     setQuantity(1);
-    setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 1500);
+    showToast('Item added to cart','success');
   };
 
   return (
@@ -26,12 +26,6 @@ export default function ProductCard({ item, onAddToCart }) {
       focus-within:border-green-500 focus-within:scale-[1.01] focus-within:shadow-lg
       transition-all duration-200 ease-in-out"
     >
-      {/* Popup */}
-      {showPopup && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-white text-green-600 text-lg font-semibold px-6 py-3 rounded-xl shadow-lg border border-green-400 z-50">
-          ✅ Item added to cart
-        </div>
-      )}
 
       {/* Product Image */}
       <div className="flex justify-center items-center w-full h-28 mb-2">
@@ -84,7 +78,7 @@ export default function ProductCard({ item, onAddToCart }) {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          className="bg-green-600 hover:bg-green-700 text-white font-medium px-3 py-1.5 rounded text-sm"
+          className="bg-green-600 hover:bg-green-700 cursor-pointer text-white font-medium px-3 py-1.5 rounded text-sm"
         >
           <span className="block sm:hidden">Add</span>
           <span className="hidden sm:block">Add to cart</span>
