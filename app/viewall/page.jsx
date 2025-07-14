@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import products from "../data/products";
 import { useCart } from "../cartpro/CartContext";
 import ProductCard from "../components/ProductCard";
 
@@ -9,6 +8,7 @@ export default function ViewAll() {
   const { cartItems, addToCart } = useCart();
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [products, setProducts] = useState([]);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -24,6 +24,19 @@ export default function ViewAll() {
       setQuantity(1);
     }
   };
+
+    useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/getAllProducts"); // update URL if different
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+    fetchProducts();
+  },);
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value);
@@ -45,11 +58,9 @@ export default function ViewAll() {
 
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-all">
   {products.map((item) => (
-    <ProductCard key={item.id} item={item} onAddToCart={addToCart} />
+    <ProductCard key={item._id} item={item} onAddToCart={addToCart} />
   ))}
 </div>
-
-
       
     </section>
   );

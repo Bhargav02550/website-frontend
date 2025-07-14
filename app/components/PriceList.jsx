@@ -1,30 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import products from "../data/products.json"; 
 import { useCart } from "../cartpro/CartContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 
 export default function PriceList() {
   const { addToCart } = useCart();
-  const [category, setCategory] = useState("Vegetables"); // Default
-
-  const isFruits = category === "Fruits";
-  const isVegetables = category === "Vegetables";
-
-  const filteredProducts = products
-    .filter((p) =>
-      category === "Fruits" ? p.category === "fruit" : p.category === "vegetable"
-    )
-    .slice(0, 8); // Limit to 8 items only
-
-  const chunkedProducts = [filteredProducts.slice(0, 4), filteredProducts.slice(4, 8)];
+  const [category, setCategory] = useState("Vegetables");
+  const [products, setProducts] = useState([]);
   const [slideIndex, setSlideIndex] = useState(0);
 
-  const currentProducts = chunkedProducts[slideIndex] || [];
+  // Fetch from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/getAllProducts"); // update URL if different
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+    fetchProducts();
+  },);
 
+  const filteredProducts = products
+  .filter((p) =>
+    p.category?.toLowerCase() === category.toLowerCase().slice(0, -1)
+  )
+  .slice(0, 8);
+
+
+  const chunkedProducts = [filteredProducts.slice(0, 4), filteredProducts.slice(4, 8)];
+  const currentProducts = chunkedProducts[slideIndex] || [];
 
   return (
     <section className="px-6 md:px-20 pb-10">
@@ -33,7 +43,7 @@ export default function PriceList() {
       <div className="bg-green-50 p-4 rounded-xl flex justify-center space-x-6 mb-10">
         <button
           className={`flex flex-col items-center px-6 py-4 rounded-xl transition ${
-            isVegetables ? "bg-white shadow border border-green-500" : ""
+            category === "Vegetables" ? "bg-white shadow border border-green-500" : ""
           }`}
           onClick={() => setCategory("Vegetables")}
         >
@@ -42,7 +52,7 @@ export default function PriceList() {
         </button>
         <button
           className={`flex flex-col items-center px-6 py-4 rounded-xl transition ${
-            isFruits ? "bg-white shadow border border-green-500" : ""
+            category === "Fruits" ? "bg-white shadow border border-green-500" : ""
           }`}
           onClick={() => setCategory("Fruits")}
         >
@@ -62,37 +72,30 @@ export default function PriceList() {
         </Link>
       </div>
 
-      {/* Product Grid */}
+      {/* Product Grid with Navigation */}
       <div className="relative">
-  {/* Chevron Left */}
-  {slideIndex > 0 && (
-    <button
-      onClick={() => setSlideIndex(slideIndex - 1)}
-      className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
-    >
-      <ChevronLeft />
-    </button>
-  )}
-
-  {/* Chevron Right */}
-  {slideIndex < chunkedProducts.length - 1 && (
-    <button
-      onClick={() => setSlideIndex(slideIndex + 1)}
-      className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
-    >
-      <ChevronRight />
-    </button>
-  )}
-
-  {/* Product Grid: 4 per slide */}
-    <div className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 sm:gap-6 transition-all">
-  {currentProducts.map((item) => (
-    <ProductCard key={item.id} item={item} onAddToCart={addToCart} />
-  ))}
-</div>
-
-  </div>
-
+        {slideIndex > 0 && (
+          <button
+            onClick={() => setSlideIndex(slideIndex - 1)}
+            className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+          >
+            <ChevronLeft />
+          </button>
+        )}
+        {slideIndex < chunkedProducts.length - 1 && (
+          <button
+            onClick={() => setSlideIndex(slideIndex + 1)}
+            className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+          >
+            <ChevronRight />
+          </button>
+        )}
+        <div className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 sm:gap-6 transition-all">
+          {currentProducts.map((item) => (
+            <ProductCard key={item._id} item={item} onAddToCart={addToCart} />
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
