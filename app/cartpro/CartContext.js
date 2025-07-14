@@ -38,7 +38,7 @@ export function CartProvider({ children }) {
   const incrementQuantity = (item) => {
     setCart((prevCart) =>
       prevCart.map((i) =>
-        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i
       )
     );
   };
@@ -46,7 +46,7 @@ export function CartProvider({ children }) {
   // Decrease quantity or remove if it goes below 1
   const decreaseQuantity = (item) => {
     setCart((prevCart) => {
-      const index = prevCart.findIndex((i) => i.id === item.id);
+      const index = prevCart.findIndex((i) => i._id === item._id);
       if (index !== -1) {
         const updatedCart = [...prevCart];
         const currentItem = updatedCart[index];
@@ -66,7 +66,7 @@ export function CartProvider({ children }) {
 
   // Remove item completely
   const removeFromCart = (item) => {
-    setCart((prevCart) => prevCart.filter((i) => i.id !== item.id));
+    setCart((prevCart) => prevCart.filter((i) => i._id !== item._id));
   };
 
   return (

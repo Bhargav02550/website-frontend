@@ -74,8 +74,29 @@ const EditAddress_context = async (index, updatedAddress) => {
     showToast("failed to update address","red");
     console.log('edit address',err.message,err);
   }
-
 }
+
+const deleteAddress_context = async (index) => {
+  const token = JSON.parse(localStorage.getItem("token"));
+  try {
+    const res = await axios.post(`${backendApi}/deleteAddress`, {
+      token,
+      index,
+    });
+
+    if (res.status === 200) {
+      showToast("Address deleted successfully", "success");
+      return res.data.addresses;
+    } else {
+      showToast("Failed to delete address", "error");
+    }
+  } catch (err) {
+    if(err.status === 500) logout();
+    showToast("Failed to delete address", "error");
+    console.error("Delete address error:", err.message);
+  }
+};
+
 
   return (
     <AuthContext.Provider
@@ -85,7 +106,8 @@ const EditAddress_context = async (index, updatedAddress) => {
         logout,
         updateAddress,
         extractAddress,
-        EditAddress_context
+        EditAddress_context,
+        deleteAddress_context
       }}
     >
       {children}
