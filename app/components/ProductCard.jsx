@@ -30,7 +30,7 @@ export default function ProductCard({ item, onAddToCart }) {
       {/* Product Image */}
       <div className="flex justify-center items-center w-full h-28 mb-2">
         <img
-          src={item.image}
+          src={item.image?.url}
           alt={item.name}
           className="w-28 h-28 object-contain"
         />
@@ -84,6 +84,6 @@ export default function ProductCard({ item, onAddToCart }) {
           <span className="hidden sm:block">Add to cart</span>
         </button>
       </div>
-    </div>
-  );
+ </div>
+);
 }

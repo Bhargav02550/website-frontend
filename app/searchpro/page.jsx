@@ -2,21 +2,39 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import products from "../data/products";
 import { useCart } from "../cartpro/CartContext";
 import ProductCard from "../components/ProductCard";
 
 export default function SearchProPage() {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
-  const [filteredResults, setFilteredResults] = useState(products);
+  const [products, setProducts] = useState([]); // ✅ Declare products first
+  const [filteredResults, setFilteredResults] = useState([]); // ✅ Init as empty array
   const { cartItems, addToCart } = useCart();
-
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  // const [isLogin , setIsLogin] = useState(false);
 
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/getAllProducts");
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("Expected an array of products");
+
+      setProducts(data);
+    } catch (err) {
+      console.error("Error fetching products:", err.message);
+    }
+  };
+
+  // Fetch products once
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Filter when products or search query changes
   useEffect(() => {
     const searchQuery = searchParams.get("query")?.toLowerCase() || "";
     setQuery(searchQuery);
@@ -28,14 +46,7 @@ export default function SearchProPage() {
       : products;
 
     setFilteredResults(results);
-  }, [searchParams]);
-
-  // useEffect(() => {
-  //     if (typeof window !== "undefined") {
-  //       const token = localStorage.getItem("token");
-  //       setIsLogin(!!token);
-  //     }
-  //   }, []);
+  }, [searchParams, products]);
 
   const openModal = (item) => {
     const inCart = cartItems.find((i) => i.id === item.id);
@@ -72,14 +83,12 @@ export default function SearchProPage() {
       {filteredResults.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {filteredResults.map((item) => (
-                  <ProductCard key={item.id} item={item} onAddToCart={addToCart} />
-                ))}
+            <ProductCard key={item._id} item={item} onAddToCart={addToCart} />
+          ))}
         </div>
       ) : (
         <p className="text-center text-gray-500">No products found.</p>
       )}
-
-     
     </section>
   );
 }

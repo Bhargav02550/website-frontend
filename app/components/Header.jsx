@@ -99,6 +99,23 @@ export default function Header() {
               </div>
             </form>
 
+            
+        {/* Location Selector (Desktop only) */}
+        {/* <div
+          className="hidden md:flex flex-col justify-center cursor-pointer w-[170px] truncate ml-4"
+          onClick={() => setShowLocationPopup(true)}
+        >
+          <span className="text-sm font-semibold text-black flex items-center">
+            Delivery in 24 Hours
+            <svg xmlns="http://www.w3.org/2000/svg" className="ml-1 w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+          <span className="text-xs text-gray-600 truncate">
+            {location || "Choose location"}
+          </span>
+        </div> */}
+
             {/* Nav Links */}
             <div className="hidden md:flex space-x-6 text-sm font-semibold text-black">
               <Link href="/" className="hover:text-green-600">Home</Link>
