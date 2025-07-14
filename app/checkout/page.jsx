@@ -23,9 +23,8 @@ export default function CheckoutPage() {
   const [editAddressIndex, setEditAddressIndex] = useState(null);
   const [editAddress, setEditAddress] = useState({});
   const [isSelected, setIsSelected] = useState(false);
-
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
-  const { updateAddress, isAuthenticated, EditAddress_context } = useAuth();
+  const { updateAddress, isAuthenticated, EditAddress_context, logout } = useAuth();
   const { showToast} = useToast();
 
   useEffect(() => {
@@ -40,6 +39,7 @@ export default function CheckoutPage() {
         setAddresses(res.data?.addresses || []);
       }
     } catch (err) {
+      if(err.status === 500) logout();
       console.error("Failed to fetch addresses", err);
     }
   };
