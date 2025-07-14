@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "../cartpro/CartContext";
@@ -14,10 +15,11 @@ export default function SearchProPage() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const backendURL = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:8000/getAllProducts");
+      const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
       const data = await res.json();

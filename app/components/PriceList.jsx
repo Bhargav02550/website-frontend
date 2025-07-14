@@ -1,5 +1,5 @@
 "use client";
-
+import axios from "axios";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "../cartpro/CartContext";
@@ -11,12 +11,12 @@ export default function PriceList() {
   const [category, setCategory] = useState("Vegetables");
   const [products, setProducts] = useState([]);
   const [slideIndex, setSlideIndex] = useState(0);
-
+  const backendURL = process.env.NEXT_PUBLIC_API_URL;
   // Fetch from backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:8000/getAllProducts"); // update URL if different
+        const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
         const data = await res.json();
         setProducts(data);
       } catch (err) {
