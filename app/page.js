@@ -1,7 +1,6 @@
 import PriceList from "./components/PriceList";
 import Features from "./components/Features";
 import Bulk from "./components/Bulk";
-import Sample from './components/sample'
 import QualitySection from "./components/QualitySection";
 import BulkBenefitsSection from "./components/BulkBenefitsSection";
 import FaqSection from "./components/FaqSection";
