@@ -3,6 +3,7 @@ import { useToast } from "../context/ToastContext";
 
 export default function ProductCard({ item, onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
+  const { showToast} = useToast();
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
@@ -83,6 +84,7 @@ export default function ProductCard({ item, onAddToCart }) {
           onClick={handleAddToCart}
           className="bg-green-600 hover:bg-green-700 text-white font-medium px-3 py-1.5 rounded text-sm cursor-pointer"
           disabled={item.stock === "Out of Stock"}
+          className="bg-green-600 hover:bg-green-700 cursor-pointer text-white font-medium px-3 py-1.5 rounded text-sm"
         >
           <span className="block sm:hidden">Add</span>
           <span className="hidden sm:block">Add to cart</span>
