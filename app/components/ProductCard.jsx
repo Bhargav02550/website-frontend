@@ -3,6 +3,8 @@ import { useToast } from "../context/ToastContext";
 
 export default function ProductCard({ item, onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
+  const { showToast} = useToast();
+
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
@@ -10,8 +12,6 @@ export default function ProductCard({ item, onAddToCart }) {
     const val = parseInt(e.target.value);
     if (!isNaN(val) && val >= 1) setQuantity(val);
   };
-
-  const { showToast} = useToast();
 
   const handleAddToCart = () => {
     onAddToCart({ ...item, quantity });
@@ -36,27 +36,23 @@ export default function ProductCard({ item, onAddToCart }) {
         />
       </div>
 
-      {/* Name & Price */}
+      {/* Name & Price in one line */}
       <div className="flex justify-between items-center w-full px-2 mt-1">
         <h3 className="font-bold text-sm truncate max-w-[65%]">{item.name}</h3>
         <p className="text-sm text-gray-700 font-semibold whitespace-nowrap">
-          ₹{item.pricePerKg}/Kg
+          ₹{item.price}/Kg
         </p>
       </div>
 
-      {/* Optional: Stock status (if useful) */}
-      {item.stock === "Out of Stock" && (
-        <p className="text-red-500 text-xs mt-1 font-medium">Out of Stock</p>
-      )}
-
-      {/* Rating */}
+      {/* Rating - smaller reviews text */}
       <div className="flex items-center justify-center text-xs text-gray-600 mt-1">
         <span className="text-yellow-400 mr-1">★★★★☆</span>
         <span className="text-[11px]">(88 reviews)</span>
       </div>
 
-      {/* Quantity + Button */}
+      {/* Quantity + Add Button */}
       <div className="flex items-center justify-between mt-3 gap-2 w-full max-w-[200px] mx-auto">
+        {/* Quantity Controls */}
         <div className="flex items-center space-x-1 text-sm">
           <button
             onClick={decrement}
@@ -79,15 +75,15 @@ export default function ProductCard({ item, onAddToCart }) {
           </button>
         </div>
 
+        {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          className="bg-green-600 hover:bg-green-700 text-white font-medium px-3 py-1.5 rounded text-sm cursor-pointer"
-          disabled={item.stock === "Out of Stock"}
+          className="bg-green-600 hover:bg-green-700 cursor-pointer text-white font-medium px-3 py-1.5 rounded text-sm"
         >
           <span className="block sm:hidden">Add</span>
           <span className="hidden sm:block">Add to cart</span>
         </button>
       </div>
-    </div>
-  );
+ </div>
+);
 }
