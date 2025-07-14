@@ -19,13 +19,12 @@ export default function SearchProPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const res = await axios.get(`${backendURL}/getAllProducts`);
+      if (!Array.isArray(res.data)) {
+        throw new Error("Expected an array of products");
+      }
 
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error("Expected an array of products");
-
-      setProducts(data);
+      setProducts(res.data);
     } catch (err) {
       console.error("Error fetching products:", err.message);
     }
