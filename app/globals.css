@@ -36,3 +36,14 @@ body {
 .no-spinner[type="number"] {
   -moz-appearance: textfield;
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+}

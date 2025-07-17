@@ -15,73 +15,102 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t mt-16 px-4 md:px-6 lg:px-8 py-10 text-sm text-gray-700">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+    <footer className="bg-white text-sm text-gray-700">
+      {/* Newsletter Section */}
+       <div className="relative bg-[#2E7D32] w-full max-w-[800px] text-white rounded-[20px] mt-10 px-4 sm:px-10 py-6 sm:py-8 flex flex-col justify-start gap-4 sm:gap-6 overflow-hidden mx-4 sm:mx-auto">
+
+        {/* Corner Decorations */}
+        <div className="absolute top-0 left-0 w-[120px] h-[120px] border-[6px] border-[#A5D6A7] rounded-full translate-x-[-50%] translate-y-[-50%]" />
+        <div className="absolute bottom-0 right-0 w-[120px] h-[120px] border-[6px] border-[#A5D6A7] rounded-full translate-x-[50%] translate-y-[50%]" />
+
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center z-10">
+          Subscribe to our newsletter
+        </h2>
+
+        <form className="flex flex-col sm:flex-row justify-end items-start gap-4 sm:mr-[50px] z-10">
+          <div className="flex flex-col w-full sm:w-auto">
+            <label htmlFor="name" className="text-sm mb-1">Name</label>
+            <input
+              type="text"
+              placeholder="First name"
+              className="bg-white text-black rounded-md px-4 py-2 w-full sm:w-[150px] focus:outline-none focus:ring-0"
+            />
+          </div>
+          <div className="flex flex-col w-full sm:w-auto">
+            <label htmlFor="email" className="text-sm mb-1">Email</label>
+            <input
+              type="email"
+              placeholder="Email address"
+              className="bg-white text-black rounded-md px-4 py-2 w-full sm:w-[280px] focus:outline-none focus:ring-0"
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-black text-white font-semibold px-6 py-2 rounded-md mt-2 sm:mt-6 w-full sm:w-auto"
+          >
+            Subscribe Now
+          </button>
+        </form>
+      </div>
+
+      {/* Footer Main Content */}
+      <div className="max-w-7xl mx-auto ml-[50px] px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {/* Logo & Description */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Image
-              src="/logo-P.png"
+              src="/logo2.png"
               alt="Go-Vigi Logo"
-              width={48}
-              height={48}
-              className="h-12 w-12 object-contain"
+              width={480}
+              height={480}
+              className="h-20 w-30 object-contain"
             />
-            <h2 className="text-xl font-bold text-green-600">Go–Vigi</h2>
+            {/* <h2 className="text-xl font-bold text-green-600">Govigi</h2> */}
           </div>
-          <p className="text-gray-500 text-sm mb-4 max-w-xs">
-            Trusted by retailers. Built for scale. Delivered with care.
-          </p>
-          <p className="font-medium mb-2">Follow us on :</p>
-          <div className="flex gap-4 text-gray-700">
-            <Facebook className="w-4 h-4 hover:text-black cursor-pointer" />
-            <Twitter className="w-4 h-4 hover:text-black cursor-pointer" />
-            <Instagram className="w-4 h-4 hover:text-black cursor-pointer" />
-            <Linkedin className="w-4 h-4 hover:text-black cursor-pointer" />
-            <Youtube className="w-4 h-4 hover:text-black cursor-pointer" />
-          </div>
+          <p className="text-gray-500 mb-2">Trusted by retailers. Built for scale.</p>
+          <p className="text-gray-500 mb-4">Delivered with care.</p>
         </div>
 
-        {/* Product */}
-        <div>
-          <h3 className="font-semibold mb-3">Product</h3>
-          <ul className="space-y-2 text-gray-600">
-            <li><Link href="#">Features</Link></li>
-            <li><Link href="#">Pricing</Link></li>
-            <li><Link href="#">Case Studies</Link></li>
-            <li><Link href="#">Reviews</Link></li>
-            <li><Link href="#">Updates</Link></li>
-          </ul>
-        </div>
-
-        {/* Company */}
+        {/* Company Links */}
         <div>
           <h3 className="font-semibold mb-3">Company</h3>
           <ul className="space-y-2 text-gray-600">
-            <li><Link href="#">About</Link></li>
-            <li><Link href="#">Contact Us</Link></li>
-            <li><Link href="#">Careers</Link></li>
-            <li><Link href="#">Culture</Link></li>
-            <li><Link href="#">Blog</Link></li>
+            <li><Link href="#">Home</Link></li>
+            <li><Link href="#">About us</Link></li>
+            <li><Link href="#">Services</Link></li>
+            <li><Link href="#">Benefits</Link></li>
+            <li><Link href="#">Categories</Link></li>
+            <li><Link href="#">Testimonials</Link></li>
+            <li><Link href="#">Contact us</Link></li>
           </ul>
         </div>
 
-        {/* Contact Info */}
+        {/* Socials */}
         <div>
-          <h3 className="font-semibold mb-3">Contact Us</h3>
+          <h3 className="font-semibold mb-3">Follow us</h3>
+          <ul className="space-y-2 text-gray-600">
+            <li className="flex items-center gap-2"><Linkedin className="w-4 h-4" /> LinkedIn</li>
+            <li className="flex items-center gap-2"><Twitter className="w-4 h-4" /> Twitter</li>
+            <li className="flex items-center gap-2"><Instagram className="w-4 h-4" /> Instagram</li>
+            <li className="flex items-center gap-2"><Facebook className="w-4 h-4" /> FaceBook</li>
+            <li className="flex items-center gap-2"><Youtube className="w-4 h-4" /> Youtube</li>
+          </ul>
+        </div>
+
+        {/* Contact */}
+        <div>
+          <h3 className="font-semibold mb-3">Contact us</h3>
           <ul className="space-y-3 text-gray-600">
             <li className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              contact@govigi.com
+              <Mail className="w-4 h-4" /> contact@govigi.com
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="w-4 h-4" />
-              +91 9876543210
+              <Phone className="w-4 h-4" /> +91 9346928139
             </li>
             <li className="flex items-start gap-2">
               <MapPin className="w-4 h-4 mt-1" />
               <span>
-                794 MC St, Hyderabad<br />
+                Hyderabad<br />
                 Telangana, TS 94102
               </span>
             </li>
@@ -89,16 +118,12 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="mt-12 border-t pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs text-gray-500 gap-2 sm:gap-0 px-1">
-        <p>© 2025 Go–Vigi. All rights reserved.</p>
-        <div className="flex gap-4">
-          <Link href="#" className="hover:underline text-blue-600">
-            Terms & Conditions
-          </Link>
-          <Link href="#" className="hover:underline text-blue-600">
-            Privacy Policy
-          </Link>
+      {/* Footer Bottom Bar */}
+      <div className="border-t pt-4 pb-6 px-10 sm:px-16 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center text-gray-500">
+        <p>Copyright © 2025 Go-vigi</p>
+        <div className="flex gap-4 mt-2 sm:mt-0">
+          <Link href="#" className="text-blue-600 hover:underline">Terms and Conditions</Link>
+          <Link href="#" className="text-blue-600 hover:underline">Privacy Policy</Link>
         </div>
       </div>
     </footer>
