@@ -3,10 +3,10 @@
 import React from "react";
 
 const stats = [
-  { value: "120+", label: "Partners rely on us" },
-  { value: "1.2 Lakh+", label: "Orders processed" },
-  { value: "1.3 Crore+", label: "Successful deliveries" },
-  { value: "650+", label: "Trusted seller brands" },
+  { value: "50+", label: "Partners rely on us" },
+  { value: "50+", label: "Orders processed" },
+  { value: "100+", label: "Successful deliveries" },
+  { value: "10+", label: "Trusted seller brands" },
 ];
 
 const Stat = () => {
