@@ -12,27 +12,28 @@ export default function PriceList() {
   const [products, setProducts] = useState([]);
   const [slideIndex, setSlideIndex] = useState(0);
   const backendURL = process.env.NEXT_PUBLIC_API_URL;
+
   // Fetch from backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
+        const res = await axios.get(`${backendURL}/getAllProducts`);
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err);
       }
     };
     fetchProducts();
-  },);
+  }, []);
 
   const filteredProducts = products
-  .filter((p) =>
-    p.category?.toLowerCase() === category.toLowerCase().slice(0, -1)
-  )
-  .slice(0, 8);
+    .filter((p) => p.category?.toLowerCase() === category.toLowerCase().slice(0, -1))
+    .slice(0, 8);
 
-
-  const chunkedProducts = [filteredProducts.slice(0, 4), filteredProducts.slice(4, 8)];
+  const chunkedProducts = [
+    filteredProducts.slice(0, 4),
+    filteredProducts.slice(4, 8),
+  ];
   const currentProducts = chunkedProducts[slideIndex] || [];
 
   return (
@@ -42,18 +43,28 @@ export default function PriceList() {
       <div className="bg-green-50 p-4 rounded-xl flex justify-center space-x-6 mb-10">
         <button
           className={`flex flex-col items-center px-6 py-4 rounded-xl transition ${
-            category === "Vegetables" ? "bg-white shadow border border-green-500" : ""
+            category === "Vegetables"
+              ? "bg-white shadow border border-green-500"
+              : ""
           }`}
-          onClick={() => setCategory("Vegetables")}
+          onClick={() => {
+            setCategory("Vegetables");
+            setSlideIndex(0);
+          }}
         >
           <img src="/veg.png" className="w-12 h-12 mb-2" />
           <span className="font-medium">Vegetables</span>
         </button>
         <button
           className={`flex flex-col items-center px-6 py-4 rounded-xl transition ${
-            category === "Fruits" ? "bg-white shadow border border-green-500" : ""
+            category === "Fruits"
+              ? "bg-white shadow border border-green-500"
+              : ""
           }`}
-          onClick={() => setCategory("Fruits")}
+          onClick={() => {
+            setCategory("Fruits");
+            setSlideIndex(0);
+          }}
         >
           <img src="/fru.png" className="w-12 h-12 mb-2" />
           <span className="font-medium">Fruits</span>
@@ -62,62 +73,62 @@ export default function PriceList() {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">{category}</h2>
-        <Link
-          href="/viewall"
-          className="text-green-600 cursor-pointer font-medium"
-        >
-          View all
-        </Link>
-      </div>
+      <h2 className="text-2xl font-bold">{category}</h2>
+      <Link
+        href={category === "Fruits" ? "/viewall1" : "/viewall"}
+        className="text-green-600 cursor-pointer font-medium"
+      >
+        View all
+      </Link>
+    </div>
 
-      {/* Product Grid with Navigation */}
-     <div className="relative overflow-hidden">
-        {/* Navigation Arrows */}
-        {slideIndex > 0 && (
-          <button
-            onClick={() => setSlideIndex(slideIndex - 1)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
-          >
-            <ChevronLeft />
-          </button>
+      {/* Product Grid or Empty Message */}
+      {filteredProducts.length === 0 ? (
+        <div className="text-center text-gray-600 text-lg font-medium py-10">
+          No {category.toLowerCase()} available at this time. We’ll restock soon!
+        </div>
+      ) : (
+        <div className="relative overflow-hidden">
+          {/* Navigation Arrows */}
+          {slideIndex > 0 && (
+            <button
+              onClick={() => setSlideIndex(slideIndex - 1)}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            >
+              <ChevronLeft />
+            </button>
+          )}
+          {slideIndex < chunkedProducts.length - 1 && (
+            <button
+              onClick={() => setSlideIndex(slideIndex + 1)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            >
+              <ChevronRight />
+            </button>
+          )}
 
-        )}
-        {slideIndex < chunkedProducts.length - 1 && (
-          <button
-            onClick={() => setSlideIndex(slideIndex + 1)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
-          >
-            <ChevronRight />
-          </button>
-
-        )}
-
-        {/* Slide Container */}
-        <div className="w-full overflow-hidden">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${slideIndex * 100}%)` }}
-          >
-            {chunkedProducts.map((group, index) => (
-             <div
-                key={index}
-                className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 sm:gap-6 w-full shrink-0"
-              >
-                {group.map((item) => (
-                  <div key={item._id} className="p-3">
-                    <ProductCard item={item} onAddToCart={addToCart} />
-                  </div>
-                ))}
-              </div>
-
-            ))}
+          {/* Slide Container */}
+          <div className="w-full overflow-hidden">
+            <div
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${slideIndex * 100}%)` }}
+            >
+              {chunkedProducts.map((group, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 sm:gap-6 w-full shrink-0"
+                >
+                  {group.map((item) => (
+                    <div key={item._id} className="p-3">
+                      <ProductCard item={item} onAddToCart={addToCart} />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-
+      )}
     </section>
   );
 }
-
-

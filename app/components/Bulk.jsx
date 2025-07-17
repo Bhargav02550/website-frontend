@@ -93,79 +93,60 @@ const HomePage = () => {
     <>
       {/* Desktop View */}
       <div
-        className="hidden md:flex min-h-screen bg-cover bg-center items-center justify-center overflow-hidden relative"
-        style={{ backgroundImage: `url(${posters[posterIndex]})` }}
+        className="hidden md:flex h-[650px] bg-cover bg-center items-center justify-center overflow-hidden"
+        style={{ backgroundImage: `url('/1.jpg')` }}
       >
-        {/* Left Arrow */}
-        <button
-          onClick={handlePrevPoster}
-          className="absolute left-8 top-1/2 cursor-pointer transform -translate-y-1/2 bg-white/70 rounded-full p-2 hover:bg-white z-20"
+        <div
+          className="overflow-hidden"
+          style={{
+            clipPath: `path('M0,0 Q50,325 0,650 L${sliderWidth},650 Q${sliderWidth - 70},325 ${sliderWidth},0 Z')`,
+            height: `${slideHeight}px`,
+            width: `${sliderWidth}px`,
+            marginLeft: "-500px",
+          }}
         >
-          <ChevronLeft size={28} />
-        </button>
-
-        {/* Right Arrow */}
-        <button
-          onClick={handleNextPoster}
-          className="absolute right-8 top-1/2 cursor-pointer transform -translate-y-1/2 bg-white/70 rounded-full p-2 hover:bg-white z-20"
-        >
-          <ChevronRight size={28} />
-        </button>
-
-        {/* Slider visible only for Poster 1 */}
-        {posterIndex === 0 && (
           <div
-            className="overflow-hidden"
+            ref={containerRef}
             style={{
-              clipPath: `path('M0,0 Q50,325 0,650 L${sliderWidth},650 Q${sliderWidth - 70},325 ${sliderWidth},0 Z')`,
-              height: `${slideHeight}px`,
-              width: `${sliderWidth}px`,
-              marginLeft: "-500px",
+              display: "flex",
+              flexDirection: "column",
+              willChange: "transform",
             }}
           >
-            <div
-              ref={containerRef}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                willChange: "transform",
-              }}
-            >
-              {extendedGroups.map(({ prev, current, next }, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    height: `${slideHeight}px`,
-                    width: `${sliderWidth}px`,
-                  }}
-                  className="flex flex-col space-y-3"
-                >
-                  <div className="h-[130px] w-full overflow-hidden">
-                    <img
-                      src={prev}
-                      alt={`Prev ${idx}`}
-                      className="w-full h-full object-cover object-bottom"
-                    />
-                  </div>
-                  <div className="h-[380px] w-full overflow-hidden">
-                    <img
-                      src={current}
-                      alt={`Current ${idx}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="h-[130px] w-full overflow-hidden">
-                    <img
-                      src={next}
-                      alt={`Next ${idx}`}
-                      className="w-full h-full object-cover object-top"
-                    />
-                  </div>
+            {extendedGroups.map(({ prev, current, next }, idx) => (
+              <div
+                key={idx}
+                style={{
+                  height: `${slideHeight}px`,
+                  width: `${sliderWidth}px`,
+                }}
+                className="flex flex-col space-y-3"
+              >
+                <div className="h-[130px] w-full overflow-hidden">
+                  <img
+                    src={prev}
+                    alt={`Prev ${idx}`}
+                    className="w-full h-full object-cover object-bottom"
+                  />
                 </div>
-              ))}
-            </div>
+                <div className="h-[380px] w-full overflow-hidden">
+                  <img
+                    src={current}
+                    alt={`Current ${idx}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="h-[130px] w-full overflow-hidden">
+                  <img
+                    src={next}
+                    alt={`Next ${idx}`}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Mobile View */}
