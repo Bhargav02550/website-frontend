@@ -69,17 +69,17 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/logo-P.png"
+                src="/logo2.png"
                 alt="Go-Vigi Logo"
                 width={500}
                 height={500}
-                className="h-10 w-10 object-contain"
+                className="h-25 w-35 object-contain"
               />
-              <span className="text-2xl font-bold text-green-600">Go-vigi</span>
+              {/* <span className="text-2xl font-bold text-green-600">Go-vigi</span> */}
             </Link>
 
             {/* Search */}
-            <form onSubmit={handleSearch} className="hidden md:flex items-center">
+            {/* <form onSubmit={handleSearch} className="hidden md:flex items-center">
               <div className="relative w-64">
                 <span className="absolute inset-y-0 left-3 flex items-center text-gray-500">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -97,7 +97,7 @@ export default function Header() {
                   className="h-10 w-full pl-10 pr-4 rounded-lg bg-gray-100 text-sm text-gray-700 placeholder-gray-400 border border-gray-200 focus:outline-none"
                 />
               </div>
-            </form>
+            </form> */}
 
             
         {/* Location Selector (Desktop only) */}
@@ -164,7 +164,7 @@ export default function Header() {
               </button>
             )}
 
-            <button
+            {/* <button
               onClick={() => {
                 if (!isAuthenticated) {
                   setShowLogin(true);
@@ -181,7 +181,7 @@ export default function Header() {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </button> */}
           </div>
 
           {/* Mobile Menu Toggle */}

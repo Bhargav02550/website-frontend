@@ -1,59 +1,175 @@
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react"; // Optional: lucide icons
+"use client";
 
-export default function Bulk() {
+import React, { useEffect, useRef, useState } from "react";
+
+const images = ["/3.png", "/2.png", "/4.png"];
+
+const HomePage = () => {
+  const slideHeight = 650;
+  const sliderWidth = 400;
+
+  const getWrappedIndex = (index) => (index + images.length) % images.length;
+
+  const groups = images.map((_, i) => ({
+    prev: images[getWrappedIndex(i - 1)],
+    current: images[i],
+    next: images[getWrappedIndex(i + 1)],
+  }));
+
+  const extendedGroups = [...groups, ...groups];
+
+  const containerRef = useRef(null);
+  const indexRef = useRef(0);
+
+  // Desktop vertical scroll effect
+  useEffect(() => {
+    const totalSlides = groups.length;
+    const slideDuration = 2800;
+    const slideTransition = 800;
+
+    function slideNext() {
+      const container = containerRef.current;
+      if (!container) return;
+
+      indexRef.current += 1;
+      container.style.transition = `transform ${slideTransition}ms ease-in-out`;
+      container.style.transform = `translateY(-${indexRef.current * slideHeight}px)`;
+
+      if (indexRef.current === totalSlides) {
+        setTimeout(() => {
+          container.style.transition = "none";
+          container.style.transform = "translateY(0)";
+          indexRef.current = 0;
+        }, slideTransition);
+      }
+    }
+
+    const intervalId = setInterval(slideNext, slideDuration);
+
+    if (containerRef.current) {
+      containerRef.current.style.transition = "none";
+      containerRef.current.style.transform = "translateY(0)";
+      indexRef.current = 0;
+    }
+
+    return () => clearInterval(intervalId);
+  }, [groups.length, slideHeight]);
+
+  // Mobile slider
+  const mobileSliderRef = useRef(null);
+  const [mobileIndex, setMobileIndex] = useState(0);
+
+  // Auto-scroll on mobile
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMobileIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Scroll effect when index changes
+  useEffect(() => {
+    const slider = mobileSliderRef.current;
+    if (!slider) return;
+
+    const offset = mobileIndex * window.innerWidth;
+    slider.scrollTo({ left: offset, behavior: "smooth" });
+  }, [mobileIndex]);
+
   return (
-    <section className="relative bg-white">
-      <div className="flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-20 py-10">
-        <div className="max-w-xl">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-            Bulk Vegetables<br />at Wholesale Prices
-          </h1>
-          <p className="text-gray-700 mb-6 text-base">
-            Delivering farm-fresh vegetables in bulk to PGs, hostels, hotels, and canteens—
-            quality you can trust, prices you'll love.
-          </p>
-          <Link href='/bulkorders'>
-            <button className="bg-green-600 hover:bg-green-700 transition text-white px-6 py-3 rounded text-lg cursor-pointer">
-              PLACE BULK ORDER
-            </button>
-          </Link>
+    <>
+      {/* Desktop View */}
+      <div
+        className="hidden md:flex min-h-screen bg-cover bg-center items-center justify-center overflow-hidden"
+        style={{ backgroundImage: `url('/1.jpg')` }}
+      >
+        <div
+          className="overflow-hidden"
+          style={{
+            clipPath: `path('M0,0 Q50,325 0,650 L${sliderWidth},650 Q${sliderWidth - 70},325 ${sliderWidth},0 Z')`,
+            height: `${slideHeight}px`,
+            width: `${sliderWidth}px`,
+            marginLeft: "-500px",
+          }}
+        >
+          <div
+            ref={containerRef}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              willChange: "transform",
+            }}
+          >
+            {extendedGroups.map(({ prev, current, next }, idx) => (
+              <div
+                key={idx}
+                style={{
+                  height: `${slideHeight}px`,
+                  width: `${sliderWidth}px`,
+                }}
+                className="flex flex-col space-y-3"
+              >
+                <div className="h-[130px] w-full overflow-hidden">
+                  <img
+                    src={prev}
+                    alt={`Prev ${idx}`}
+                    className="w-full h-full object-cover object-bottom"
+                  />
+                </div>
+                <div className="h-[380px] w-full overflow-hidden">
+                  <img
+                    src={current}
+                    alt={`Current ${idx}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="h-[130px] w-full overflow-hidden">
+                  <img
+                    src={next}
+                    alt={`Next ${idx}`}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile View */}
+      <div className="md:hidden mt-0.5 h-[470px] overflow-x-hidden">
+        <div
+          ref={mobileSliderRef}
+          className="flex transition-all duration-500 ease-in-out"
+          style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
+        >
+          {images.map((src, i) => (
+            <div key={i} className="flex-shrink-0 w-full h-[450px]">
+              <img
+                src={src}
+                alt={`Image ${i}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
         </div>
 
-        <img
-          src="/basket.png"
-          alt="Vegetable Basket"
-          className="w-80 h-auto mb-6 md:mb-0"
-        />
-
-
-        <button className="absolute left-4 top-[30%] md:top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2">
-        <ChevronLeft />
-      </button>
-      <button className="absolute right-4 top-[30%] md:top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2">
-        <ChevronRight />
-      </button>
-
+        {/* Dot Navigation */}
+        <div className="flex justify-center mt-2 space-x-2">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setMobileIndex(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
+                mobileIndex === i ? "bg-black" : "bg-gray-400"
+              }`}
+            />
+          ))}
+        </div>
       </div>
-
- 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 md:px-20 pb-12">
-        {[
-          { title: "120+", subtitle: "Partners rely on us" },
-          { title: "1.2 Lakh+", subtitle: "partners rely on us" },
-          { title: "1.3 Crore+", subtitle: "successful orders completed" },
-          { title: "650+", subtitle: "trusted seller brands onboard" },
-        ].map((item, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-xl shadow-lg text-center py-6 px-4 transform transition hover:-translate-y-1 hover:shadow-2xl"
-
-          >
-            <h2 className="text-2xl font-semibold text-black">{item.title}</h2>
-            <p className="text-gray-500 text-sm">{item.subtitle}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    </>
   );
-}
+};
+
+export default HomePage;

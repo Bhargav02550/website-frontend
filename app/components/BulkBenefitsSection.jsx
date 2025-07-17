@@ -3,17 +3,17 @@ export default function BulkBenefitsSection() {
     {
       title: "Flexible Schedules",
       description: "Choose daily, weekly, or custom delivery times",
-      image: "/time.png", // replace with your actual image path
+      image: "/time.png",
     },
     {
       title: "Custom Instructions",
       description: "We follow your preferences, every time",
-      image: "/doc.png", // replace with your actual image path
+      image: "/doc.png",
     },
     {
       title: "Multiple Payment Modes",
       description: "Pay your way: UPI, cards, wallets & more",
-      image: "/wal.png", // replace with your actual image path
+      image: "/wal.png",
     },
   ];
 
@@ -28,7 +28,7 @@ export default function BulkBenefitsSection() {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl shadow-md p-6 text-center flex flex-col items-center space-y-3"
+            className="bg-white rounded-2xl shadow-md p-6 text-center flex flex-col items-center space-y-3 transition-transform duration-300 hover:scale-[1.03] hover:shadow-lg"
           >
             <img src={feature.image} alt={feature.title} className="w-12 h-12" />
             <h3 className="font-semibold text-lg">{feature.title}</h3>

@@ -72,29 +72,52 @@ export default function PriceList() {
       </div>
 
       {/* Product Grid with Navigation */}
-      <div className="relative">
+     <div className="relative overflow-hidden">
+        {/* Navigation Arrows */}
         {slideIndex > 0 && (
           <button
             onClick={() => setSlideIndex(slideIndex - 1)}
-            className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
           >
             <ChevronLeft />
           </button>
+
         )}
         {slideIndex < chunkedProducts.length - 1 && (
           <button
             onClick={() => setSlideIndex(slideIndex + 1)}
-            className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow hover:bg-gray-100"
           >
             <ChevronRight />
           </button>
+
         )}
-        <div className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 sm:gap-6 transition-all">
-          {currentProducts.map((item) => (
-            <ProductCard key={item._id} item={item} onAddToCart={addToCart} />
-          ))}
+
+        {/* Slide Container */}
+        <div className="w-full overflow-hidden">
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${slideIndex * 100}%)` }}
+          >
+            {chunkedProducts.map((group, index) => (
+             <div
+                key={index}
+                className="grid grid-cols-2 grid-rows-2 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 sm:gap-6 w-full shrink-0"
+              >
+                {group.map((item) => (
+                  <div key={item._id} className="p-3">
+                    <ProductCard item={item} onAddToCart={addToCart} />
+                  </div>
+                ))}
+              </div>
+
+            ))}
+          </div>
         </div>
       </div>
+
     </section>
   );
 }
+
+
