@@ -27,7 +27,7 @@ export default function ViewAll() {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
@@ -37,7 +37,7 @@ export default function ViewAll() {
       }
     };
     fetchProducts();
-  },);
+  });
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value);
@@ -45,7 +45,6 @@ export default function ViewAll() {
       setQuantity(value);
     }
   };
-
 
   const modalTotal = selectedItem
     ? (parseFloat(selectedItem.price) * quantity).toFixed(2)
@@ -58,11 +57,10 @@ export default function ViewAll() {
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-all">
-  {products.map((item) => (
-    <ProductCard key={item._id} item={item} onAddToCart={addToCart} />
-  ))}
-</div>
-      
+        {products.map((item) => (
+          <ProductCard key={item._id} item={item} onAddToCart={addToCart} />
+        ))}
+      </div>
     </section>
   );
 }

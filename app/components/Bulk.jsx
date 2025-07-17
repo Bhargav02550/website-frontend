@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const images = ["/3.png", "/2.png", "/4.png"];
+const posters = ["/1.jpg", "/poster2.svg", "/poster3.svg"];
 
 const HomePage = () => {
   const slideHeight = 650;
@@ -21,13 +23,17 @@ const HomePage = () => {
   const containerRef = useRef(null);
   const indexRef = useRef(0);
 
-  // Desktop vertical scroll effect
+  const [posterIndex, setPosterIndex] = useState(0);
+
+  // Desktop slider (auto vertical scroll)
   useEffect(() => {
+    if (posterIndex !== 0) return;
+
     const totalSlides = groups.length;
-    const slideDuration = 2800;
+    const slideDuration = 2500;
     const slideTransition = 800;
 
-    function slideNext() {
+    const slideNext = () => {
       const container = containerRef.current;
       if (!container) return;
 
@@ -42,9 +48,9 @@ const HomePage = () => {
           indexRef.current = 0;
         }, slideTransition);
       }
-    }
+    };
 
-    const intervalId = setInterval(slideNext, slideDuration);
+    const interval = setInterval(slideNext, slideDuration);
 
     if (containerRef.current) {
       containerRef.current.style.transition = "none";
@@ -52,14 +58,21 @@ const HomePage = () => {
       indexRef.current = 0;
     }
 
-    return () => clearInterval(intervalId);
-  }, [groups.length, slideHeight]);
+    return () => clearInterval(interval);
+  }, [posterIndex, groups.length, slideHeight]);
+
+  const handlePrevPoster = () => {
+    setPosterIndex((prev) => (prev - 1 + posters.length) % posters.length);
+  };
+
+  const handleNextPoster = () => {
+    setPosterIndex((prev) => (prev + 1) % posters.length);
+  };
 
   // Mobile slider
   const mobileSliderRef = useRef(null);
   const [mobileIndex, setMobileIndex] = useState(0);
 
-  // Auto-scroll on mobile
   useEffect(() => {
     const interval = setInterval(() => {
       setMobileIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -68,7 +81,6 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Scroll effect when index changes
   useEffect(() => {
     const slider = mobileSliderRef.current;
     if (!slider) return;
@@ -81,7 +93,7 @@ const HomePage = () => {
     <>
       {/* Desktop View */}
       <div
-        className="hidden md:flex h-[650px] bg-cover bg-center items-center justify-center overflow-hidden"
+        className="hidden md:flex min-h-screen bg-cover bg-center items-center justify-center overflow-hidden"
         style={{ backgroundImage: `url('/1.jpg')` }}
       >
         <div
