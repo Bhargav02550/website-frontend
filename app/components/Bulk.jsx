@@ -93,7 +93,7 @@ const HomePage = () => {
     <>
       {/* Desktop View */}
       <div
-        className="hidden md:flex min-h-screen bg-cover bg-center items-center justify-center overflow-hidden"
+        className="hidden md:flex h-[650px] bg-cover bg-center items-center justify-center overflow-hidden"
         style={{ backgroundImage: `url('/1.jpg')` }}
       >
         <div
