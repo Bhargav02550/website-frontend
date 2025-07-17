@@ -69,11 +69,11 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/logo2.png"
+                src="/LOGO-png 3.svg"
                 alt="Go-Vigi Logo"
-                width={500}
-                height={500}
-                className="h-25 w-35 object-contain"
+                width={200}
+                height={200}
+                className="h-25 w-25 object-contain"
               />
               {/* <span className="text-2xl font-bold text-green-600">Go-vigi</span> */}
             </Link>
@@ -186,7 +186,14 @@ export default function Header() {
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-gray-800 focus:outline-none">
+            <button
+              onClick={() => setShowLogin(true)}
+              className="h-10 flex items-center space-x-2 cursor-pointer bg-green-600 text-white font-semibold px-4 rounded-lg"
+            >
+              <Image src="/User1.png" alt="Login" width={20} height={20} className="w-5 h-5" />
+              <span>Login</span>
+            </button>
+            {/* <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-gray-800 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -194,12 +201,12 @@ export default function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
 
         {/* Mobile Menu Content */}
-        {mobileMenuOpen && (
+        {/* {mobileMenuOpen && (
           <div className="md:hidden px-4 pb-4 pt-2 space-y-4 bg-white shadow">
             <input
               type="text"
@@ -210,7 +217,7 @@ export default function Header() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm"
             />
 
-            {/* <div
+            <div
               className="flex flex-col justify-center cursor-pointer max-w-full"
               onClick={() => setShowLocationPopup(true)}
             >
@@ -218,7 +225,7 @@ export default function Header() {
               <span className="text-xs text-gray-600 truncate">
                 {location || "Choose location"}
               </span>
-            </div> */}
+            </div>
 
             {isAuthenticated ? (
               <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg">
@@ -266,7 +273,7 @@ export default function Header() {
               )}
 
           </div>
-        )}
+        )} */}
       </nav>
 
       {/* Login Modal */}
