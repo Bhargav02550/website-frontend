@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -20,6 +21,7 @@ export default function LoginCard({ isOpen, onClose, onLoginSuccess }) {
 
   const { login } = useAuth();
   const { showToast } = useToast();
+  const router = useRouter();
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export default function LoginCard({ isOpen, onClose, onLoginSuccess }) {
       } else {
         login(res.data.token);
         onLoginSuccess?.();
+        router.push("/webapp");
       }
     } catch {
       showToast("Invalid or expired OTP", "warning");
@@ -104,6 +107,7 @@ export default function LoginCard({ isOpen, onClose, onLoginSuccess }) {
       setMessage("Profile completed");
       login(token);
       onLoginSuccess?.();
+      router.push("/webapp");
     } catch {
       setMessage("Failed to submit profile");
     } finally {

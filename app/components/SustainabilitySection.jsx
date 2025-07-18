@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 export default function SustainabilitySection() {
   return (
-    <section className="bg-[#2e7d32] text-white px-6 md:px-20 py-6 overflow-hidden">
+    <section className="bg-[#2e7d32] text-white px-6 md:px-20 py-6 overflow-hidden" id='about'>
       <div className="flex flex-col md:flex-row items-center justify-between gap-10">
         {/* Left Text */}
         <div className="flex-1 max-w-xl">

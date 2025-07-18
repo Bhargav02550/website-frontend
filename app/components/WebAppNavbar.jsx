@@ -4,34 +4,20 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-
-const extractCity = (place) => {
-  const address = place.address || {};
-  return (
-    address.city ||
-    address.town ||
-    address.village ||
-    address.county ||
-    address.state_district ||
-    place.display_name?.split(",")[0]?.trim() ||
-    "Unknown"
-  );
-};
+import Address from "../components/Address";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const router = useRouter();
+  const { logout , isAuthenticated} = useAuth();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [cartCount, setCartCount] = useState(2);
   const [location, setLocation] = useState("");
-  const [showLogin, setShowLogin] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-  const inputRef = useRef(null);
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -39,66 +25,22 @@ export default function Header() {
     }
   };
 
-  const handleLogout = () => {
-    // Clear tokens or any stored auth info
-    localStorage.removeItem("authToken");
-    setIsAuthenticated(false);
-    setShowProfileDropdown(false);
-    router.push("/"); // Redirect out of webapp
-  };
-
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-        );
-        const data = await response.json();
-
-        const city = extractCity(data);
-        const state = data.address?.state || "";
-        const formatted = { city, state };
-
-        setLocation(`${city}, ${state}`);
-        localStorage.setItem("location", JSON.stringify(formatted));
-        setShowLocationPopup(false);
-      });
-    }
-  };
-
-  const fetchSuggestions = async (query) => {
-    if (!query) return;
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`
-    );
-    const data = await res.json();
-    setSuggestions(data);
-  };
-
-  const handleSelectSuggestion = (place) => {
-    const city = extractCity(place);
-    const state = place.address?.state || "";
-    const formatted = { city, state };
-
-    setLocation(`${city}, ${state}`);
-    localStorage.setItem("location", JSON.stringify(formatted));
-    setSuggestions([]);
-    setShowLocationPopup(false);
+  const formatLocation = (locObj) => {
+    if (!locObj) return "";
+    const { city, state } = locObj;
+    return [city, state].filter(Boolean).join(", ");
   };
 
   useEffect(() => {
-    const storedLocation = localStorage.getItem("location");
-    if (storedLocation) {
-      try {
-        const parsed = JSON.parse(storedLocation);
-        if (typeof parsed === "object" && (parsed.city || parsed.state)) {
-          setLocation(`${parsed.city || ""}, ${parsed.state || ""}`);
-        } else {
-          setLocation(parsed);
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("user-location");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setLocation(formatLocation(parsed));
+        } catch (e) {
+          console.error("Invalid location data:", e);
         }
-      } catch (err) {
-        setLocation(storedLocation);
       }
     }
   }, []);
@@ -166,26 +108,20 @@ export default function Header() {
             <Link href="/wallet">
               <Image src="/webapp/wallet.png" alt="Wallet" width={24} height={24} />
             </Link>
-
-            {isAuthenticated ? (
-              <div className="relative">
-                <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full bg-green-100 p-2">
-                  <Image src="/User1.png" alt="Profile" width={24} height={24} />
-                </button>
-                {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
-                    <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">My Account</Link>
-                    <Link href="/saved-address" className="block px-4 py-2 text-sm hover:bg-gray-100">Saved Address</Link>
-                    <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-gray-100">My Orders</Link>
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button onClick={() => setShowLogin(true)} className="rounded-full bg-green-100 p-2">
-                <Image src="/User1.png" alt="Login" width={24} height={24} />
+            
+            <div className="relative">
+              <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full bg-green-100 p-2">
+                <Image src="/User1.png" alt="Profile" width={24} height={24} />
               </button>
-            )}
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
+                  <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">My Account</Link>
+                  <Link href="/saved-address" className="block px-4 py-2 text-sm hover:bg-gray-100">Saved Address</Link>
+                  <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-gray-100">My Orders</Link>
+                  <button onClick={() => { setShowLogoutConfirm(true)}} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="md:hidden">
@@ -220,7 +156,7 @@ export default function Header() {
               <Link href="/orders">📄 My Orders</Link>
               <Link href="/profile">👤 Profile</Link>
               {isAuthenticated ? (
-                <button onClick={handleLogout} className="text-red-600 text-left">Logout</button>
+                <button onClick={() => { setShowLogoutConfirm(true)}} className="text-red-600 text-left">Logout</button>
               ) : (
                 <button onClick={() => setShowLogin(true)} className="text-green-600 text-left">Login</button>
               )}
@@ -230,28 +166,57 @@ export default function Header() {
 
         {/* Location Popup */}
         {showLocationPopup && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-md w-full max-w-md">
-              <h2 className="text-lg font-semibold mb-4">Choose Your Location</h2>
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Enter your address"
-                onChange={(e) => fetchSuggestions(e.target.value)}
-                className="w-full border p-2 rounded-md"
-              />
-              <ul className="mt-2 max-h-40 overflow-y-auto">
-                {suggestions.map((s, idx) => (
-                  <li key={idx} className="cursor-pointer p-2 hover:bg-gray-100" onClick={() => handleSelectSuggestion(s)}>
-                    {extractCity(s)}, {s.address?.state || ""}
-                  </li>
-                ))}
-              </ul>
-              <div className="flex justify-between mt-4">
-                <button onClick={() => setShowLocationPopup(false)} className="px-4 py-2 bg-gray-300 rounded-md">Cancel</button>
-                <button onClick={getUserLocation} className="px-4 py-2 bg-green-500 text-white rounded-md">Use My Location</button>
+          <Address
+            isOpen={showLocationPopup}
+            onClose={() => setShowLocationPopup(false)}
+            onLocationUpdate={(newLoc) => {
+              localStorage.setItem("user-location", JSON.stringify(newLoc));
+              setLocation(formatLocation(newLoc));
+              setShowLocationPopup(false);
+            }}
+          />
+        )}
+
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-black/40 backdrop-blur-sm">
+            <div className="animate-slide-down bg-white p-6 rounded-xl shadow-xl w-full max-w-sm text-center">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                Are you sure you want to logout?
+              </h2>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => {
+                    logout();
+                    setShowLogoutConfirm(false);
+                    router.push("/");
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
+            <style jsx>{`
+              .animate-slide-down {
+                animation: slideDownFade 0.3s ease-out forwards;
+              }
+              @keyframes slideDownFade {
+                0% {
+                  opacity: 0;
+                  transform: translateY(-20px);
+                }
+                100% {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+            `}</style>
           </div>
         )}
       </header>

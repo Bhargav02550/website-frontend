@@ -25,7 +25,7 @@ export default function QualitySection() {
   ];
 
   return (
-    <section className="px-4 sm:px-6 md:px-20 pt-12 pb-20 bg-white overflow-hidden">
+    <section className="px-4 sm:px-6 md:px-20 pt-12 pb-20 bg-white overflow-hidden" id='services'>
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-18">
         Our Commitment to Quality and Freshness
       </h2>

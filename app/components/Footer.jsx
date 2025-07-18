@@ -15,7 +15,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-sm text-gray-700">
+    <footer className="bg-white text-sm text-gray-700" id="contact">
       {/* Newsletter Section */}
        <div className="relative bg-[#2E7D32] w-full max-w-[800px] text-white rounded-[20px] mt-10 px-4 sm:px-10 py-6 sm:py-8 flex flex-col justify-start gap-4 sm:gap-6 overflow-hidden mx-4 sm:mx-auto">
 
