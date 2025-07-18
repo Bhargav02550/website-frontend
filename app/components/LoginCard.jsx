@@ -6,7 +6,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
-export default function LoginCard({ isOpen, onClose }) {
+export default function LoginCard({ isOpen, onClose, onLoginSuccess }) {
   const modalRef = useRef();
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -17,9 +17,9 @@ export default function LoginCard({ isOpen, onClose }) {
   const [countdown, setCountdown] = useState(0);
   const [isNewUser, setIsNewUser] = useState(false);
   const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "" });
+
   const { login } = useAuth();
   const { showToast } = useToast();
-
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -63,12 +63,6 @@ export default function LoginCard({ isOpen, onClose }) {
     }
   };
 
-  const formatCountdown = (seconds) => {
-    const min = String(Math.floor(seconds / 60)).padStart(2, "0");
-    const sec = String(seconds % 60).padStart(2, "0");
-    return `${min}:${sec}`;
-  };
-
   const handleVerifyOtp = async () => {
     const otpValue = otp.join("");
     if (otpValue.length !== 4) return;
@@ -78,14 +72,14 @@ export default function LoginCard({ isOpen, onClose }) {
         contact: mobile,
         otp: otpValue,
       });
-      showToast("Login successful", "red");
+      showToast("Login successful", "green");
 
       if (res.data.isNew) {
         setIsNewUser(true);
         setToken(res.data?.token);
       } else {
         login(res.data.token);
-        closeModalWithReset();
+        onLoginSuccess?.();
       }
     } catch {
       showToast("Invalid or expired OTP", "warning");
@@ -109,23 +103,12 @@ export default function LoginCard({ isOpen, onClose }) {
       });
       setMessage("Profile completed");
       login(token);
-      closeModalWithReset();
+      onLoginSuccess?.();
     } catch {
       setMessage("Failed to submit profile");
     } finally {
       setLoading(false);
     }
-  };
-
-  const closeModalWithReset = () => {
-    setOtpSent(false);
-    setIsNewUser(false);
-    setOtp(["", "", "", ""]);
-    setMobile("");
-    setMessage("");
-    setProfile({ firstName: "", lastName: "", email: "" });
-    setCountdown(0);
-    setTimeout(() => onClose(), 1000);
   };
 
   const handleOtpChange = (index, value) => {
@@ -147,21 +130,18 @@ export default function LoginCard({ isOpen, onClose }) {
       >
         <button
           onClick={() => {
-              if (isNewUser) {
-                setIsNewUser(false);
-                setMessage("");
-              } 
-              else if (otpSent) {
-                setOtpSent(false);
-                setOtp(["", "", "", ""]);
-                setMessage("");
-                setCountdown(0);
-              } 
-              else {
-                onClose();
-              }
+            if (isNewUser) {
+              setIsNewUser(false);
+              setMessage("");
+            } else if (otpSent) {
+              setOtpSent(false);
+              setOtp(["", "", "", ""]);
+              setMessage("");
+              setCountdown(0);
+            } else {
+              onClose();
             }
-          }
+          }}
           className="absolute top-4 left-4 text-gray-500 hover:text-black text-xl"
         >
           <ArrowLeft className="w-5 h-5 cursor-pointer" />
@@ -171,6 +151,7 @@ export default function LoginCard({ isOpen, onClose }) {
           {!otpSent ? "Log in or Sign up" : isNewUser ? "Complete Profile" : "Enter OTP"}
         </p>
 
+        {/* STEP 1: Enter Mobile */}
         {!otpSent ? (
           <div className="animate-fade-in">
             <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden mb-4">
@@ -198,6 +179,8 @@ export default function LoginCard({ isOpen, onClose }) {
               )}
             </button>
           </div>
+
+        // STEP 2: Complete Profile
         ) : isNewUser ? (
           <div className="animate-fade-in space-y-4">
             <div className="flex gap-4">
@@ -240,6 +223,7 @@ export default function LoginCard({ isOpen, onClose }) {
             </button>
           </div>
 
+        // STEP 3: OTP Verification
         ) : (
           <div className="animate-fade-in">
             <p className="text-sm text-gray-600 mb-2 text-center">
@@ -283,7 +267,7 @@ export default function LoginCard({ isOpen, onClose }) {
               Didn’t receive OTP?{" "}
               {countdown > 0 ? (
                 <span className="text-red-500">
-                  Resend in {formatCountdown(countdown)}
+                  Resend in {`${String(Math.floor(countdown / 60)).padStart(2, "0")}:${String(countdown % 60).padStart(2, "0")}`}
                 </span>
               ) : (
                 <span
@@ -303,13 +287,8 @@ export default function LoginCard({ isOpen, onClose }) {
 
         <p className="text-xs text-center text-gray-500 mt-4">
           By continuing, you agree to our{" "}
-          <a href="#" className="underline">
-            Terms of service
-          </a>{" "}
-          &{" "}
-          <a href="#" className="underline">
-            Privacy policy
-          </a>
+          <a href="#" className="underline">Terms of service</a> &{" "}
+          <a href="#" className="underline">Privacy policy</a>
         </p>
       </div>
 
