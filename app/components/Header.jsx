@@ -3,10 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import LoginCard from "../components/LoginCard";
 
 export default function Header() {
-  const [showLogin, setShowLogin] = useState(false);
 
   return (
     <>
@@ -28,41 +26,11 @@ export default function Header() {
               <Link href="/#about" className="hover:text-green-600">About us</Link>
               <Link href="/#services" className="hover:text-green-600">Services</Link>
               <Link href="/#contact" className="hover:text-green-600">Contact us</Link>
-              {/* <button
-                onClick={() => router.push("/webapp")}
-                className="hover:text-green-600"
-              >
-                WebApp
-              </button> */}
             </div>
-          </div>
-
-          {/* Right Side: Login/Profile */}
-          <div className="hidden md:flex items-center space-x-4 text-sm font-medium text-gray-800">
-            <button
-              onClick={() => setShowLogin(true)}
-              className="h-10 flex items-center cursor-pointer space-x-2 bg-green-600 text-white font-semibold px-4 rounded-lg"
-            >
-              <Image src="/User1.png" alt="Login" width={20} height={20} className="w-5 h-5" />
-              <span>Login</span>
-            </button>
-          </div>
-
-          {/* Mobile Login Button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setShowLogin(true)}
-              className="h-10 flex items-center space-x-2 bg-green-600 text-white font-semibold px-4 rounded-lg"
-            >
-              <Image src="/User1.png" alt="Login" width={20} height={20} className="w-5 h-5" />
-              <span>Login</span>
-            </button>
           </div>
         </div>
       </nav>
-
-      {/* Login Modal */}
-      <LoginCard isOpen={showLogin} onClose={() => setShowLogin(false)} />
+      
     </>
   );
 }

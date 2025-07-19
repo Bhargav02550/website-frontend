@@ -139,7 +139,7 @@ export default function CheckoutPage() {
         setShowOrderPlaced(true);
         setTimeout(() => {
           setShowOrderPlaced(false);
-          router.push("/viewall");
+          router.push("/webapp");
         }, 2500);
       } else {
         alert(data.message || "Order creation failed");
