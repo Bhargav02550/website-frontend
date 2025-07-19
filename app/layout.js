@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  const showWebAppNavbar = pathname.startsWith("/webapp");
+  const showWebAppNavbar = pathname.startsWith("/webapp") || pathname.startsWith("/search");
 
   return (
     <html lang="en">

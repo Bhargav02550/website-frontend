@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Address from "../components/Address";
 import { useAuth } from "../context/AuthContext";
+import LoginCard from "../components/LoginCard";
 
 export default function Header() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function Header() {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(2);
+  const [showLogin, setShowLogin] = useState(false);
   const [location, setLocation] = useState("");
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -110,15 +112,17 @@ export default function Header() {
             </Link>
             
             <div className="relative">
-              <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full bg-green-100 p-2">
+              <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full cursor-pointer bg-green-100 p-2">
                 <Image src="/User1.png" alt="Profile" width={24} height={24} />
               </button>
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
                   <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">My Account</Link>
                   <Link href="/saved-address" className="block px-4 py-2 text-sm hover:bg-gray-100">Saved Address</Link>
-                  <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-gray-100">My Orders</Link>
-                  <button onClick={() => { setShowLogoutConfirm(true)}} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+                  {isAuthenticated ? 
+                    <button onClick={() => { setShowLogoutConfirm(true)}} className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>:
+                    <button onClick={() => setShowLogin(true)} className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Signin/Signup</button>
+                  }
                 </div>
               )}
             </div>
@@ -177,6 +181,10 @@ export default function Header() {
           />
         )}
 
+        {/* login */}
+        <LoginCard isOpen={showLogin} onClose={() => setShowLogin(false)} />
+        
+        {/* logout */}
         {showLogoutConfirm && (
           <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-black/40 backdrop-blur-sm">
             <div className="animate-slide-down bg-white p-6 rounded-xl shadow-xl w-full max-w-sm text-center">
@@ -188,7 +196,7 @@ export default function Header() {
                   onClick={() => {
                     logout();
                     setShowLogoutConfirm(false);
-                    router.push("/");
+                    // router.push("/");
                   }}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                 >

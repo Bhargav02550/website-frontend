@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "../cartpro/CartContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../generalComponents/ProductCard";
 
 export default function PriceList() {
   const { addToCart } = useCart();
@@ -16,6 +16,7 @@ export default function PriceList() {
   // Fetch from backend
   useEffect(() => {
     const fetchProducts = async () => {
+      localStorage.setItem('category', 'Vegetables');
       try {
         const res = await axios.get(`${backendURL}/getAllProducts`);
         setProducts(res.data);
@@ -49,6 +50,7 @@ export default function PriceList() {
           }`}
           onClick={() => {
             setCategory("Vegetables");
+            localStorage.setItem('category','Vegetables');
             setSlideIndex(0);
           }}
         >
@@ -63,6 +65,7 @@ export default function PriceList() {
           }`}
           onClick={() => {
             setCategory("Fruits");
+            localStorage.setItem('category', 'Fruits');
             setSlideIndex(0);
           }}
         >
@@ -74,18 +77,34 @@ export default function PriceList() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
       <h2 className="text-2xl font-bold">{category}</h2>
-      <Link
-        href={category === "Fruits" ? "/viewall1" : "/viewall"}
-        className="text-green-600 cursor-pointer font-medium"
-      >
-        View all
-      </Link>
+      {category === 'Vegetables' ? 
+        (   
+          <Link
+            href='/webapp'
+            className="text-green-600 cursor-pointer font-medium"
+          >
+            View all
+          </Link>
+        ) : (<></>)
+      }
     </div>
 
       {/* Product Grid or Empty Message */}
       {filteredProducts.length === 0 ? (
-        <div className="text-center text-gray-600 text-lg font-medium py-10">
-          No {category.toLowerCase()} available at this time. We’ll restock soon!
+        <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md max-w-lg mx-auto">
+          <div className="mb-6">
+              <div className="w-32 h-24 rounded-md flex items-center justify-center">
+                  <img src="/cancel-order.png" alt="logo" />
+              </div>
+          </div>
+
+          <p className="text-center text-gray-700 text-lg mb-6">
+              No fruits available at this time. We’ll restock soon!
+          </p>
+
+          {/* <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+              Notify Me
+          </button> */}
         </div>
       ) : (
         <div className="relative overflow-hidden">

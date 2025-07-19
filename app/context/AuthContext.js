@@ -53,7 +53,6 @@ const updateAddress = async (address) => {
     }
   } catch (err) {
     if(err.status === 400) showToast("Address already exists.", "warning");
-    else showToast("Server error occurred", "error");
     console.error(err);
   }
 };
