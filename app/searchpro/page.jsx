@@ -90,7 +90,7 @@ export default function SearchProPage() {
         {filteredResults.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {filteredResults.map((item) => (
-              <ProductCard key={item._id} item={item} onAddToCart={addToCart} webapp={webapp} setShowLogin={setShowLogin}/>
+              <ProductCard key={item._id} item={item} onAddToCart={addToCart} webapp={true} setShowLogin={showLogin}/>
             ))}
           </div>
         ) : (
