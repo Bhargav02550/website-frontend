@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useCart } from "../cartpro/CartContext";
-import ProductCard from "../generalComponents/ProductCard";
+import ProductCard from "./ProductCard";
 
 export default function ViewAll({webapp , setShowLogin}) {
   const { cartItems, addToCart } = useCart();

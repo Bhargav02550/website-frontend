@@ -20,7 +20,6 @@ export default function SearchProPage() {
   const [showModal, setShowModal] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const backendURL = process.env.NEXT_PUBLIC_API_URL;
-  const webapp = true
 
   const fetchProducts = async () => {
     try {
@@ -90,7 +89,7 @@ export default function SearchProPage() {
         {filteredResults.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {filteredResults.map((item) => (
-              <ProductCard key={item._id} item={item} onAddToCart={addToCart} webapp={true} setShowLogin={showLogin}/>
+              <ProductCard key={item._id} item={item} onAddToCart={addToCart} webapp={true} setShowLogin={setShowLogin}/>
             ))}
           </div>
         ) : (
