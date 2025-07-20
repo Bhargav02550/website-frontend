@@ -107,7 +107,7 @@ export default function TestimonialCarousel() {
 
   return (
     <section className="bg-[#f9f9f9] text-black py-12 px-4 md:px-16 overflow-x-hidden">
-      <h2 className="text-2xl md:text-3xl font-semibold text-center mb-10">
+      <h2 className="text-2xl md:text-3xl font-semibold text-center mt-5 mb-18">
         What Our Retailers Say About Go-Vigi
       </h2>
 
