@@ -23,7 +23,7 @@ export default function Home() {
   }, [isAuthenticated]);
 
   return (
-    <main className="font-sans bg-white text-black">
+    <main className="font-sans bg-white text-black overflow-x-hidden">
       {/* <Sample/> */}
       <Bulk />
       <Stat/>
