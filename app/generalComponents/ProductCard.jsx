@@ -13,9 +13,11 @@ export default function ProductCard({ item, onAddToCart, webapp, setShowLogin })
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
-  useEffect(()=> {
-    if(isAuthenticated) setShowLogin(false);
-  })
+  useEffect(() => {
+    if (isAuthenticated && typeof setShowLogin === "function") {
+      setShowLogin(false);
+    }
+  }, [isAuthenticated, setShowLogin]);
   const toggleWishlist = () => {
     if(!isAuthenticated) {
       setShowLogin(true)

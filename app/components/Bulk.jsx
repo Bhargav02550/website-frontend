@@ -7,7 +7,7 @@ const images = ["/3.png", "/2.png", "/4.png"];
 const posters = ["/1.jpg", "/poster2.svg", "/poster3.svg"];
 
 const HomePage = () => {
-  const slideHeight = 650;
+  const slideHeight = 600;
   const sliderWidth = 400;
 
   const getWrappedIndex = (index) => (index + images.length) % images.length;
@@ -19,18 +19,25 @@ const HomePage = () => {
   }));
 
   const extendedGroups = [...groups, ...groups];
-
   const containerRef = useRef(null);
   const indexRef = useRef(0);
-
   const [posterIndex, setPosterIndex] = useState(0);
+
+  //slide the posters
+  useEffect(() => {
+    const posterInterval = setInterval(() => {
+      setPosterIndex((prevIndex) => (prevIndex + 1) % posters.length);
+    }, 4000);
+
+    return () => clearInterval(posterInterval);
+  }, [posters.length]);
 
   // Desktop slider (auto vertical scroll)
   useEffect(() => {
     if (posterIndex !== 0) return;
 
     const totalSlides = groups.length;
-    const slideDuration = 2500;
+    const slideDuration = 1500;
     const slideTransition = 800;
 
     const slideNext = () => {
@@ -92,10 +99,17 @@ const HomePage = () => {
   return (
     <>
       {/* Desktop View */}
-      <div
-        className="hidden md:flex min-h-screen bg-cover bg-center items-center justify-center overflow-hidden relative"
-        style={{ backgroundImage: `url(${posters[posterIndex]})` }}
-      >
+      <div className="hidden md:flex min-h-screen items-center justify-center overflow-hidden relative">
+        {posters.map((poster, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+              posterIndex === idx ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ backgroundImage: `url(${poster})` }}
+          />
+        ))}
+
         {/* Left Arrow */}
         <button
           onClick={handlePrevPoster}
