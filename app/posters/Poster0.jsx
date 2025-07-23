@@ -91,7 +91,7 @@ const Poster0 = ({ containerRef }) => {
                   className="w-full h-full object-cover object-bottom"
                 />
               </div>
-              <div className="h-[380px] w-full overflow-hidden">
+              <div className="h-[430px] w-full overflow-hidden">
                 <img
                   src={current}
                   alt={`Current ${idx}`}
