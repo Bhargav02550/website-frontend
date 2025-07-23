@@ -40,7 +40,7 @@ const Poster2 = () => {
         {["/farmer.jpg", "/business.jpg", "/community.jpg"].map((src, i) => (
           <div
             key={i}
-            className="bg-black/60 rounded-xl text-white p-5 w-[305px] h-[295px] bg-cover bg-center flex flex-col justify-start transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
+            className="bg-black/60 rounded-xl text-white p-5 w-[305px] h-[310px] bg-cover bg-center flex flex-col justify-start transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
             style={{
               backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${src})`,
               backgroundBlendMode: "multiply",
