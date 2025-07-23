@@ -15,13 +15,12 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-sm text-gray-700" id="contact">
+    <footer className="bg-white text-sm text-gray-700 overflow-x-hidden" id="contact">
       {/* Newsletter Section */}
-       <div className="relative bg-[#2E7D32] w-full max-w-[800px] text-white rounded-[20px] mt-10 px-4 sm:px-10 py-6 sm:py-8 flex flex-col justify-start gap-4 sm:gap-6 overflow-hidden mx-4 sm:mx-auto">
-
+      <div className="relative bg-[#2E7D32] max-w-[800px] text-white rounded-[20px] mt-10 px-4 sm:px-10 py-6 sm:py-8 flex flex-col justify-start gap-4 sm:gap-6 overflow-hidden mx-4 sm:mx-auto">
         {/* Corner Decorations */}
-        <div className="absolute top-0 left-0 w-[120px] h-[120px] border-[6px] border-[#A5D6A7] rounded-full translate-x-[-50%] translate-y-[-50%]" />
-        <div className="absolute bottom-0 right-0 w-[120px] h-[120px] border-[6px] border-[#A5D6A7] rounded-full translate-x-[50%] translate-y-[50%]" />
+        <div className="absolute top-0 left-0 w-[120px] h-[120px] border-[6px] border-[#A5D6A7] rounded-full translate-x-[-50%] translate-y-[-50%] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[120px] h-[120px] border-[6px] border-[#A5D6A7] rounded-full translate-x-[50%] translate-y-[50%] pointer-events-none" />
 
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center z-10">
           Subscribe to our newsletter
@@ -54,18 +53,17 @@ export default function Footer() {
       </div>
 
       {/* Footer Main Content */}
-      <div className="max-w-7xl mx-auto ml-[50px] px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {/* Logo & Description */}
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Image
-              src="/logo2.png"
+              src="/LOGO-png 3.svg"
               alt="Go-Vigi Logo"
               width={480}
               height={480}
-              className="h-20 w-30 object-contain"
+              className="h-10 w-18 object-contain"
             />
-            {/* <h2 className="text-xl font-bold text-green-600">Govigi</h2> */}
           </div>
           <p className="text-gray-500 mb-2">Trusted by retailers. Built for scale.</p>
           <p className="text-gray-500 mb-4">Delivered with care.</p>
@@ -119,7 +117,7 @@ export default function Footer() {
       </div>
 
       {/* Footer Bottom Bar */}
-      <div className="border-t pt-4 pb-6 px-10 sm:px-16 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center text-gray-500">
+      <div className="border-t pt-4 pb-6 px-6 sm:px-16 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center text-gray-500">
         <p>Copyright © 2025 Go-vigi</p>
         <div className="flex gap-4 mt-2 sm:mt-0">
           <Link href="#" className="text-blue-600 hover:underline">Terms and Conditions</Link>
