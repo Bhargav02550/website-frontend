@@ -77,14 +77,15 @@ export default function WishlistPage() {
                   />
 
                   {/* Product info */}
-                  <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+                  <h3 className="text-lg font-bold">{product.name}</h3>
 
                   {/* Price + Add to Cart */}
                   <div className="flex justify-between items-center mt-4">
-                    <span className="text-green-600 font-bold text-lg">₹{product.pricePerKg}/Kg</span>
+                    <span className=" font-semibold text-gray-800 text-sm">₹{product.pricePerKg}/Kg</span>
                     <button
                       onClick={() => addToCart(product)}
-                      className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded-md"
+                      className="cursor-pointer bg-[#2E7D32] hover:bg-green-700 text-white font-medium
+                      px-3 py-1.5 rounded-lg text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
                     >
                       Add to Cart
                     </button>

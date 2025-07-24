@@ -97,7 +97,9 @@ export default function Header() {
 
             <Link href="/wishlist" className="relative">
               <Image src="/webapp/wishlist.png" alt="Wishlist" width={24} height={24} />
-              <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">{wishlist || 0}</span>
+              {wishlist >= 1 && (
+                <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">{wishlist}</span>
+              )}
             </Link>
 
             <Link href="/notifications">
