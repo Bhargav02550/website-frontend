@@ -7,6 +7,8 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+  const [isWishlisted, setIsWishlisted] = useState(false)
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
   const { showToast } = useToast();
 
@@ -38,7 +40,7 @@ export function AuthProvider({ children }) {
     };
   };
 
-  
+//Address
 const updateAddress = async (address) => {
   try {
     const token = JSON.parse(localStorage.getItem("token"));
@@ -96,17 +98,63 @@ const deleteAddress_context = async (index) => {
   }
 };
 
+// wishList
+const Get_Wishlist = async () => {
+  try{
+    let token = localStorage.getItem('token');
+    if(token) token = JSON.parse(token);
+    const res = await axios.post(`${backendApi}/getWishlist`, { token });
+    setWishlist(res.data.wishlist.length)
+    return res.data.wishlist;
+  }
+  catch (err) {
+    console.error('Error fetching wishlist:', err);
+    if (err.response?.status === 401 || err.response?.status === 403) {
+        logout();
+    }
+    return [];
+  }
+}
+
+const Toggle_wishlist = async (product_id)=> {
+  try {
+    let token = localStorage.getItem("token");
+    if(token) token = JSON.parse(token);
+    const res = await axios.post(`${backendApi}/togglewish`, {
+      token,
+      productId: product_id,
+    });
+
+    const { status } = res.data;
+
+    if (status === "added") {
+      setIsWishlisted(true);
+      showToast("Added to wishlist", "success");
+    } else if (status === "removed") {
+      setIsWishlisted(false);
+      showToast("Removed from wishlist", "info");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        wishlist,
+        isWishlisted,
+        setIsWishlisted,
         login,
         logout,
         updateAddress,
         extractAddress,
         EditAddress_context,
-        deleteAddress_context
+        deleteAddress_context,
+        Get_Wishlist,
+        Toggle_wishlist
       }}
     >
       {children}

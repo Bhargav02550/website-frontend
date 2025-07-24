@@ -1,14 +1,16 @@
 "use client";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
 import { Heart } from "lucide-react";
+import axios from "axios";
 
 export default function ProductCard({ item, onAddToCart, webapp, setShowLogin }) {
   const [quantity, setQuantity] = useState(1);
   const { showToast } = useToast();
-  const { isAuthenticated } = useAuth();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { isAuthenticated , logout, Get_Wishlist } = useAuth();
+  const backendURL = process.env.NEXT_PUBLIC_API_URL;
+  const [isWishlisted, setIsWishlisted] = useState(false)
 
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
@@ -18,15 +20,55 @@ export default function ProductCard({ item, onAddToCart, webapp, setShowLogin })
       setShowLogin(false);
     }
   }, [isAuthenticated, setShowLogin]);
-  const toggleWishlist = () => {
-    if(!isAuthenticated) {
-      setShowLogin(true)
+
+  // Check if item is already in wishlist on component mount
+  useEffect(() => {
+    const checkWishlist = async () => {
+      try {
+        if (!isAuthenticated) return;
+
+        const data = await Get_Wishlist();
+
+        const wishlist = data || [];
+        const found = wishlist.find((p) => p._id === item._id);
+        if (found) setIsWishlisted(true);
+      } catch (err) {
+        if(err.status === 500) logout();
+        console.error("Failed to check wishlist", err);
+      }
+    };
+
+    checkWishlist();
+  }, [isAuthenticated, item._id]);
+
+  const toggleWishlist = async () => {
+    if (!isAuthenticated) {
+      setShowLogin(true);
       return;
     }
 
-    setIsWishlisted(!isWishlisted);
-    // Optionally: Handle API call for wishlist here
+    try {
+      let token = localStorage.getItem("token");
+      if(token) token = JSON.parse(token);
+      const res = await axios.post(`${backendURL}/togglewish`, {
+        token,
+        productId: item._id,
+      });
+
+      await Get_Wishlist();
+      const { status } = res.data;
+      if (status === "added") {
+        setIsWishlisted(true);
+        showToast("Added to wishlist", "success");
+      } else if (status === "removed") {
+        setIsWishlisted(false);
+        showToast("Removed from wishlist", "info");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   const handleInput = (e) => {
     const val = e.target.value;
     // Allow empty string so user can type freely
@@ -41,9 +83,8 @@ export default function ProductCard({ item, onAddToCart, webapp, setShowLogin })
     }
   };
 
-
   const handleAddToCart = () => {
-    if(!isAuthenticated) {
+    if (!isAuthenticated) {
       setShowLogin(true);
       return;
     }
@@ -76,61 +117,60 @@ export default function ProductCard({ item, onAddToCart, webapp, setShowLogin })
           ₹{item.price}/Kg
         </p>
       </div>
-      
+
       {/* Quantity + Add Button */}
-      {webapp ? 
-        (
-          <div
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3 w-full max-w-full mx-auto"
-          >
-            <div className="flex justify-center mt-2">
-              <Heart
-                onClick={toggleWishlist}
-                className={`w-5 h-5 cursor-pointer transition-all duration-300
-                  ${isWishlisted ? "text-red-500 scale-125" : "text-gray-400 scale-100"}`}
-              />
-            </div>
-            {/* Quantity Controls */}
-            {/* <div className="flex items-center space-x-1 text-xs sm:text-sm justify-center sm:justify-start">
-              <button
-                onClick={decrement}
-                className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold text-xs sm:text-sm"
-              >
-                -
-              </button>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={handleInput}
-                onBlur={() => {
-                  if (!quantity || quantity < 1) setQuantity(1);
-                }}
-                onKeyDown={(e) => {
-                  if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
-                }}
-                className="w-10 text-center focus:outline-none no-spinner font-bold text-xs sm:text-sm"
-              />
-
-              <button
-                onClick={increment}
-                className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold text-xs sm:text-sm"
-              >
-                +
-              </button>
-            </div> */}
-
-            {/* Add to Cart Button */}
-            <button
-              onClick={handleAddToCart}
-              className="bg-[#2E7D32] cursor-pointer hover:bg-green-700 text-white font-medium
-              px-3 py-1.5 rounded-lg text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
-            >
-              Add to cart
-            </button>
+      {webapp ? (
+        <div
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3 w-full max-w-full mx-auto"
+        >
+          <div className="flex justify-center mt-2">
+            <Heart
+              onClick={toggleWishlist}
+              className={`w-5 h-5 cursor-pointer transition-all duration-300
+                ${isWishlisted ? "text-red-500 scale-125" : "text-gray-400 scale-100"}`}
+            />
           </div>
-        ) : (<></>)
-      }
+          {/* Quantity Controls */}
+          {/* <div className="flex items-center space-x-1 text-xs sm:text-sm justify-center sm:justify-start">
+            <button
+              onClick={decrement}
+              className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold text-xs sm:text-sm"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={handleInput}
+              onBlur={() => {
+                if (!quantity || quantity < 1) setQuantity(1);
+              }}
+              onKeyDown={(e) => {
+                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+              }}
+              className="w-10 text-center focus:outline-none no-spinner font-bold text-xs sm:text-sm"
+            />
+            <button
+              onClick={increment}
+              className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold text-xs sm:text-sm"
+            >
+              +
+            </button>
+          </div> */}
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="bg-[#2E7D32] cursor-pointer hover:bg-green-700 text-white font-medium
+              px-3 py-1.5 rounded-lg text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
+          >
+            Add to cart
+          </button>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
