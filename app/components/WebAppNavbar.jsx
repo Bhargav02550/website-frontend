@@ -6,14 +6,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Address from "../components/Address";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../cartpro/CartContext";
 import LoginCard from "../components/LoginCard";
 
 export default function Header() {
   const router = useRouter();
-  const { logout , isAuthenticated} = useAuth();
+  const { logout , isAuthenticated, wishlist} = useAuth();
+  const { cartItems } = useCart();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartCount, setCartCount] = useState(2);
   const [showLogin, setShowLogin] = useState(false);
   const [location, setLocation] = useState("");
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -87,16 +88,16 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-4">
             <Link href="/cart" className="relative">
               <Image src="/webapp/cart.png" alt="Cart" width={24} height={24} />
-              {cartCount > 0 && (
+              {cartItems.length > 0 && (
                 <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                  {cartCount}
+                  {cartItems.length}
                 </span>
               )}
             </Link>
 
             <Link href="/wishlist" className="relative">
               <Image src="/webapp/wishlist.png" alt="Wishlist" width={24} height={24} />
-              <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">0</span>
+              <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">{wishlist || 0}</span>
             </Link>
 
             <Link href="/notifications">
