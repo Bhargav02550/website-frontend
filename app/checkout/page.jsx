@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const [addresses, setAddresses] = useState([]);
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedAddressId, setSelectedAddressId] = useState([]);
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -38,6 +38,7 @@ export default function CheckoutPage() {
   const { showToast } = useToast();
 
   useEffect(() => {
+    // console.log('selected address', selectedAddressId);
     fetchAddresses();
   });
 
@@ -47,6 +48,7 @@ export default function CheckoutPage() {
         const token = JSON.parse(localStorage.getItem("token"));
         const res = await axios.post(`${backendApi}/getAddress`, { token });
         setAddresses(res.data?.addresses || []);
+        // console.log('Addresses : ', addresses);
       }
     } catch (err) {
       if (err.status === 500) logout();
@@ -71,7 +73,7 @@ export default function CheckoutPage() {
         await fetchAddresses();
       } else {
         setAddresses((prev) => [...prev, saved]);
-        setSelectedAddressId(saved._id);
+        setSelectedAddressId(saved);
       }
 
       if (addresses.length >= 3) setShowNewAddressForm(false);
@@ -100,7 +102,7 @@ export default function CheckoutPage() {
   };
 
   const handleProceedToPayment = async () => {
-    const selectedAddress = addresses.find((a) => a._id === selectedAddressId);
+    const selectedAddress = addresses.find((a) => a._id === selectedAddressId._id);
 
     if (!selectedAddress) {
       return alert("Please select a valid delivery address.");
@@ -167,7 +169,7 @@ export default function CheckoutPage() {
               <div
                 key={addr._id}
                 className={`border rounded-xl p-5 shadow-sm bg-white relative overflow-hidden group transition-all duration-300 ${
-                  selectedAddressId === addr._id
+                  selectedAddressId._id === addr._id
                     ? "ring-2 ring-green-500 border-green-500"
                     : "hover:shadow-md"
                 } ${
@@ -184,7 +186,7 @@ export default function CheckoutPage() {
                   <Pencil className="w-4 h-4 cursor-pointer text-green-700" />
                 </button>
 
-                {selectedAddressId === addr._id && (
+                {selectedAddressId._id === addr._id && (
                   <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full z-10">
                     Selected
                   </span>
@@ -296,7 +298,7 @@ export default function CheckoutPage() {
                   <div
                     onClick={() =>
                       setSelectedAddressId((prevId) =>
-                        prevId === addr._id ? null : addr._id
+                        prevId === addr._id ? null : addr
                       )
                     }
                     className="space-y-1 cursor-pointer"
