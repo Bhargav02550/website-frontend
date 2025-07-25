@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
   const showWebAppNavbar = pathname.startsWith("/webapp") || pathname.startsWith("/search") || 
   pathname.startsWith("/cart") || pathname.startsWith("/wishlist") || pathname.startsWith("/notifications") || pathname.startsWith("/wallet")||
-  pathname.startsWith("/orders");
+  pathname.startsWith("/orders") || pathname.startsWith("/checkout");
 
   return (
     <html lang="en">
