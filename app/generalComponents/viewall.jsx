@@ -27,22 +27,28 @@ export default function ViewAll({webapp , setShowLogin}) {
       setQuantity(1);
     }
   };
-
-  useEffect(() => {
-    const savedCategory = localStorage.getItem('category');
-    if (savedCategory) {
-      setCategory(savedCategory.charAt(0).toUpperCase() + savedCategory.slice(1));  // Example: fruits -> Fruits
-    }
-    const fetch_VegProducts = async () => {
+  const fetch_VegProducts = async () => {
       try {
         const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err);
       }
-    };
-    if(category === 'Vegetables') fetch_VegProducts();
-  });
+  };
+
+  useEffect(() => {
+    const savedCategory = localStorage.getItem('category');
+    if (savedCategory) {
+      const formatted = savedCategory.charAt(0).toUpperCase() + savedCategory.slice(1);
+      setCategory(formatted);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (category === 'Vegetables') {
+      fetch_VegProducts();
+    }
+  }, [category]);
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value);

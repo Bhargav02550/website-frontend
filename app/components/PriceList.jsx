@@ -12,10 +12,8 @@ export default function PriceList() {
   const [products, setProducts] = useState([]);
   const [slideIndex, setSlideIndex] = useState(0);
   const backendURL = process.env.NEXT_PUBLIC_API_URL;
-
-  // Fetch from backend
-  useEffect(() => {
-    const fetchProducts = async () => {
+  
+  const fetchProducts = async () => {
       localStorage.setItem('category', 'Vegetables');
       try {
         const res = await axios.get(`${backendURL}/getAllProducts`);
@@ -23,7 +21,10 @@ export default function PriceList() {
       } catch (err) {
         console.error("Error fetching products:", err);
       }
-    };
+  };
+
+  // Fetch from backend
+  useEffect(() => {
     fetchProducts();
   }, []);
 

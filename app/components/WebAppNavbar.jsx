@@ -106,7 +106,7 @@ export default function Header() {
               <Image src="/webapp/bell.png" alt="Notifications" width={24} height={24} />
             </Link>
 
-            <Link href="/orders">
+            <Link href="/ordershistory">
               <Image src="/webapp/orders.png" alt="Orders" width={24} height={24} />
             </Link>
 
@@ -115,12 +115,12 @@ export default function Header() {
             </Link>
             
             <div className="relative">
-              <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full cursor-pointer bg-green-100 p-2">
+              <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full cursor-pointer bg-green-700 p-2">
                 <Image src="/User1.png" alt="Profile" width={24} height={24} />
               </button>
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
-                  <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">My Account</Link>
+                  <p className="block px-4 py-2 text-sm hover:bg-gray-100">My Account</p>
                   <Link href="/saved-address" className="block px-4 py-2 text-sm hover:bg-gray-100">Saved Address</Link>
                   {isAuthenticated ? 
                     <button onClick={() => { setShowLogoutConfirm(true)}} className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>:

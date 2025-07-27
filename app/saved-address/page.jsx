@@ -28,7 +28,7 @@ export default function SavedAddress() {
 
   useEffect(() => {
     fetchAddresses();
-  });
+  },[]);
 
   const fetchAddresses = async () => {
     try {
@@ -102,9 +102,9 @@ export default function SavedAddress() {
           return (
             <div
               key={addr._id}
-              className={`relative border rounded-xl p-4 shadow-sm bg-white group transition-all ${
+              className={`relative border rounded-xl p-4 shadow-sm bg-white group transition-all  ${
                 selectedAddressId === addr._id ? "ring-2 ring-green-500 border-green-500" : "hover:shadow-md"
-              } ${isEditing ? "h-auto" : "max-h-[180px] overflow-hidden"}`}
+              } ${isEditing ? "h-fit" : "h-auto overflow-hidden"}`}
             >
 
               {/* Edit Icon */}
