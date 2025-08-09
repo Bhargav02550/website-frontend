@@ -11,7 +11,7 @@ import LoginCard from "../components/LoginCard";
 
 export default function Header() {
   const router = useRouter();
-  const { logout , isAuthenticated, wishlist} = useAuth();
+  const { logout, isAuthenticated, wishlist } = useAuth();
   const { cartItems } = useCart();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,14 +59,30 @@ export default function Header() {
         <nav className="flex items-center justify-between h-16 px-4 md:px-10">
           <div className="flex items-center gap-4 w-full max-w-[60%]">
             <Link href="/webapp">
-              <Image src="/LOGO-png 3.svg" alt="GoVigi Logo" width={80} height={32} />
+              <Image
+                src="/LOGO-png 3.svg"
+                alt="GoVigi Logo"
+                width={80}
+                height={32}
+              />
             </Link>
 
             <form onSubmit={handleSearch} className="hidden md:flex flex-grow">
               <div className="relative w-full">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
+                    />
                   </svg>
                 </span>
                 <input
@@ -79,15 +95,22 @@ export default function Header() {
               </div>
             </form>
 
-            <div className="hidden lg:flex flex-col text-sm cursor-pointer" onClick={() => setShowLocationPopup(true)}>
-              <span className="font-semibold text-black">Delivery in 24 hours</span>
-              <span className="text-gray-600 text-xs">{location || "Choose your location"}</span>
+            <div
+              className="hidden lg:flex flex-col text-sm cursor-pointer"
+              onClick={() => setShowLocationPopup(true)}
+            >
+              <span className="font-semibold text-black">
+                Delivery in 24 hours
+              </span>
+              <span className="text-gray-600 text-xs">
+                {location || "Choose your location"}
+              </span>
             </div>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
             <Link href="/cart" className="relative">
-              <Image src="/webapp/cart.png" alt="Cart" width={24} height={24} />
+              <Image src="/webapp/cart.svg" alt="Cart" width={24} height={24} />
               {cartItems.length > 0 && (
                 <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                   {cartItems.length}
@@ -96,36 +119,81 @@ export default function Header() {
             </Link>
 
             <Link href="/wishlist" className="relative">
-              <Image src="/webapp/wishlist.png" alt="Wishlist" width={24} height={24} />
+              <Image
+                src="/webapp/wishlist.svg"
+                alt="Wishlist"
+                width={24}
+                height={24}
+              />
               {wishlist >= 1 && (
-                <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">{wishlist}</span>
+                <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                  {wishlist}
+                </span>
               )}
             </Link>
 
             <Link href="/notifications">
-              <Image src="/webapp/bell.png" alt="Notifications" width={24} height={24} />
+              <Image
+                src="/webapp/notifications.svg"
+                alt="Notifications"
+                width={24}
+                height={24}
+              />
             </Link>
 
             <Link href="/ordershistory">
-              <Image src="/webapp/orders.png" alt="Orders" width={24} height={24} />
+              <Image
+                src="/webapp/myOrders.svg"
+                alt="Orders"
+                width={24}
+                height={24}
+              />
             </Link>
 
             <Link href="/wallet">
-              <Image src="/webapp/wallet.png" alt="Wallet" width={24} height={24} />
+              <Image
+                src="/webapp/wallet.svg"
+                alt="Wallet"
+                width={24}
+                height={24}
+              />
             </Link>
-            
+
             <div className="relative">
-              <button onClick={() => setShowProfileDropdown(!showProfileDropdown)} className="rounded-full cursor-pointer bg-green-700 p-2">
-                <Image src="/User1.png" alt="Profile" width={24} height={24} />
+              <button
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                className="rounded-full cursor-pointe"
+              >
+                <Image src="/webapp/profile.svg" alt="Profile" width={24} height={24} className="bg-green-400" />
               </button>
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
-                  <p className="block px-4 py-2 text-sm hover:bg-gray-100">My Account</p>
-                  <Link href="/saved-address" className="block px-4 py-2 text-sm hover:bg-gray-100">Saved Address</Link>
-                  {isAuthenticated ? 
-                    <button onClick={() => { setShowLogoutConfirm(true)}} className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>:
-                    <button onClick={() => setShowLogin(true)} className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Signin/Signup</button>
-                  }
+                  <p className="block px-4 py-2 text-sm hover:bg-gray-100">
+                    My Account
+                  </p>
+                  <Link
+                    href="/saved-address"
+                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Saved Address
+                  </Link>
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => {
+                        setShowLogoutConfirm(true);
+                      }}
+                      className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setShowLogin(true)}
+                      className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Signin/Signup
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -133,11 +201,27 @@ export default function Header() {
 
           <div className="md:hidden">
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7 text-gray-800"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -156,16 +240,83 @@ export default function Header() {
               />
             </form>
 
-            <div className="flex flex-col space-y-3 text-sm">
-              <Link href="/cart">🛒 Cart</Link>
-              <Link href="/wishlist">❤️ Wishlist</Link>
-              <Link href="/notifications">🔔 Notifications</Link>
-              <Link href="/orders">📄 My Orders</Link>
-              <Link href="/profile">👤 Profile</Link>
+            <div className="flex flex-col space-y-4 text-sm">
+              {[
+                { href: "/cart", icon: "/webapp/cart.svg", label: "Cart" },
+                {
+                  href: "/wishlist",
+                  icon: "/webapp/wishlist.svg",
+                  label: "Wishlist",
+                },
+                {
+                  href: "/notifications",
+                  icon: "/webapp/notifications.svg",
+                  label: "Notifications",
+                },
+                {
+                  href: "/ordershistory",
+                  icon: "/webapp/myOrders.svg",
+                  label: "My Orders",
+                },
+                {
+                  href: "#",
+                  icon: "/webapp/profile.svg",
+                  label: "Profile",
+                  extraClass: "bg-green-700",
+                },
+              ].map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.href}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    src={item.icon}
+                    alt={item.label}
+                    width={32}
+                    height={32}
+                    className=""
+                  />
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+
               {isAuthenticated ? (
-                <button onClick={() => { setShowLogoutConfirm(true)}} className="text-red-600 text-left">Logout</button>
+                <Link
+                  href="/logout" // or the route you want
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowLogoutConfirm(true);
+                  }}
+                  className="flex items-center gap-3 text-red-600"
+                >
+                  <Image
+                    src="/webapp/logout.svg"
+                    alt="Logout"
+                    width={42}
+                    height={42}
+                    className="object-contain"
+                  />
+                  Logout
+                </Link>
               ) : (
-                <button onClick={() => setShowLogin(true)} className="text-green-600 text-left">Login</button>
+                <Link
+                  href="/login" // or the route you want
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowLogin(true);
+                  }}
+                  className="flex items-center gap-3 text-green-600"
+                >
+                  <Image
+                    src="/webapp/login.svg"
+                    alt="Login"
+                    width={32}
+                    height={32}
+                    className="p-1 bg-gray-100 rounded-full"
+                  />
+                  Login
+                </Link>
               )}
             </div>
           </div>
@@ -186,7 +337,7 @@ export default function Header() {
 
         {/* login */}
         <LoginCard isOpen={showLogin} onClose={() => setShowLogin(false)} />
-        
+
         {/* logout */}
         {showLogoutConfirm && (
           <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-black/40 backdrop-blur-sm">
