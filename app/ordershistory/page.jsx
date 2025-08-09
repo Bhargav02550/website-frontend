@@ -73,7 +73,7 @@ const HistorySection = () => {
   }
 
   return (
-    <div className="w-[461px] h-[720px] bg-white rounded-tl-lg rounded-bl-lg p-6 overflow-y-auto items-center justify-center mx-auto">
+    <div className="h-[720px] bg-white rounded-tl-lg rounded-bl-lg p-6 overflow-y-auto items-center justify-center mx-auto">
       <div className="justify-center items-center mx-auto">
       <h2 className="text-xl font-semibold mb-4 text-center">History</h2>
       </div>
