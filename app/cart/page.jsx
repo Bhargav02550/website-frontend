@@ -48,40 +48,27 @@ export default function CartPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto my-8 bg-white shadow-lg rounded-xl overflow-hidden font-sans">
+    <div className="max-w-xl mx-auto  font-sans">
       {/* Header */}
-      <div className="flex justify-between items-center p-5 border-b border-gray-200">
-        <h1 className="text-2xl font-semibold text-gray-800">Cart</h1>
-        {/* 'X' button to close/go back */}
-        <button
-          onClick={() => router.back()}
-          className="text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-gray-300"
-        >
-          <X size={24} />
-        </button>
+      <div className="flex justify-center items-center p-4">
+        <h1 className="text-xl font-semibold text-gray-800">Cart</h1>
       </div>
 
       {/* Cart Items Section */}
       <div className="p-5 space-y-4">
         {cartItems.length === 0 ? (
-          <div className="text-center py-10 text-gray-500">
-            <svg
-              className="w-16 h-16 mx-auto mb-4 text-gray-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"
-              />
-            </svg>
+          <div className="text-center py-10">
+            {/* <Image
+              src="/webapp/cart.png"
+              alt="Cart"
+              width={64}
+              height={64}
+              className="mx-auto"
+            /> */}
             <p className="text-xl font-medium">Your cart is empty</p>
             <p className="mt-2 text-sm">Add some items to get started</p>
           </div>
-        ) : (
+        ) : ( 
           cartItems.map((item) => (
             <div
               key={item._id} // Using _id for a more stable key if available
