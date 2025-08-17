@@ -3,53 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 
-// Mock data for demo - replace with your actual API
-const mockOrders = [
-  {
-    _id: "64a1b2c3d4e5f6789012345a",
-    userId: "user123",
-    items: [
-      {
-        name: "Premium Organic Basmati Rice",
-        image: { url: "/api/placeholder/60/60" },
-        quantity: 2,
-      },
-      {
-        name: "Fresh Wheat Flour",
-        image: { url: "/api/placeholder/60/60" },
-        quantity: 1,
-      },
-      {
-        name: "Organic Quinoa",
-        image: { url: "/api/placeholder/60/60" },
-        quantity: 3,
-      },
-    ],
-    scheduledDate: "2024-01-15T10:30:00Z",
-    createdAt: "2024-01-10T14:20:00Z",
-  },
-  {
-    _id: "64a1b2c3d4e5f6789012345b",
-    userId: "user456",
-    items: [
-      {
-        name: "Brown Rice",
-        image: { url: "/api/placeholder/60/60" },
-        quantity: 1,
-      },
-    ],
-    scheduledDate: "2024-01-16T09:00:00Z",
-    createdAt: "2024-01-11T11:15:00Z",
-  },
-];
-
 export default function AllOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  // Replace this with your actual API call
   const API_URL = process.env.NEXT_PUBLIC_API_URL + "/getAllOrders";
 
   const [generatingPDF, setGeneratingPDF] = useState(null);
@@ -101,12 +60,10 @@ export default function AllOrdersPage() {
       doc.text("Order Items", margin, y);
       y += 8;
 
-      // Loop through items and render as cards
       for (let i = 0; i < order.items.length; i++) {
         const item = order.items[i];
         if (!item) continue;
 
-        // New page if space is insufficient
         if (y > 240) {
           doc.addPage();
           y = margin;

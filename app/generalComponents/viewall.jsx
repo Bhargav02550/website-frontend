@@ -5,8 +5,15 @@ import { useState, useEffect } from "react";
 import { useCart } from "../cartpro/CartContext";
 import ProductCard from "./ProductCard";
 
-export default function ViewAll({webapp , setShowLogin}) {
-  const { cartItems, addToCart } = useCart();
+export default function ViewAll({ webapp, setShowLogin }) {
+  const {
+    cartItems,
+    addToCart,
+    incrementQuantity,
+    decreaseQuantity,
+    updateQuantity,
+    removeFromCart,
+  } = useCart();
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [products, setProducts] = useState([]);
@@ -28,24 +35,25 @@ export default function ViewAll({webapp , setShowLogin}) {
     }
   };
   const fetch_VegProducts = async () => {
-      try {
-        const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
-        setProducts(res.data);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      }
+    try {
+      const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
+      setProducts(res.data.products);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
   };
 
   useEffect(() => {
-    const savedCategory = localStorage.getItem('category');
+    const savedCategory = localStorage.getItem("category");
     if (savedCategory) {
-      const formatted = savedCategory.charAt(0).toUpperCase() + savedCategory.slice(1);
+      const formatted =
+        savedCategory.charAt(0).toUpperCase() + savedCategory.slice(1);
       setCategory(formatted);
     }
   }, []);
 
   useEffect(() => {
-    if (category === 'Vegetables') {
+    if (category === "Vegetables") {
       fetch_VegProducts();
     }
   }, [category]);
@@ -63,16 +71,27 @@ export default function ViewAll({webapp , setShowLogin}) {
 
   return (
     <>
-      <section className="px-6 md:px-20 py-10">
-        <h2 className="text-2xl font-bold mb-6 text-center md:text-left">
-          {
-            category === 'Vegetables' ? 'All Vegetables' : 'All Fruits'
-          }
+      <section className="px-2 md:px-10 py-5">
+        <h2 className="text-sm font-bold mb-6 text-left">
+          Buy Bulk Fresh 
+          {category === "Vegetables" ? " Vegetables " : "Fruits"}
+          Online
         </h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-all">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 transition-all">
           {products.map((item) => (
-            <ProductCard key={item._id} item={item} onAddToCart={addToCart} webapp={webapp} setShowLogin={setShowLogin}/>
+            <ProductCard
+              key={item._id}
+              item={item}
+              onAddToCart={addToCart}
+              webapp={webapp}
+              setShowLogin={setShowLogin}
+              cartItems={cartItems}
+              incrementQuantity={incrementQuantity}
+              decreaseQuantity={decreaseQuantity}
+              updateQuantity={updateQuantity}
+              removeFromCart={removeFromCart}
+            />
           ))}
         </div>
       </section>

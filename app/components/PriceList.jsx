@@ -7,20 +7,20 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "../generalComponents/ProductCard";
 
 export default function PriceList() {
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, incrementQuantity, decreaseQuantity } = useCart();
   const [category, setCategory] = useState("Vegetables");
   const [products, setProducts] = useState([]);
   const [slideIndex, setSlideIndex] = useState(0);
   const backendURL = process.env.NEXT_PUBLIC_API_URL;
-  
+
   const fetchProducts = async () => {
-      localStorage.setItem('category', 'Vegetables');
-      try {
-        const res = await axios.get(`${backendURL}/getAllProducts`);
-        setProducts(res.data);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      }
+    localStorage.setItem("category", "Vegetables");
+    try {
+      const res = await axios.get(`${backendURL}/getAllProducts`);
+      setProducts(res.data.products);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
   };
 
   // Fetch from backend
@@ -29,7 +29,9 @@ export default function PriceList() {
   }, []);
 
   const filteredProducts = products
-    .filter((p) => p.category?.toLowerCase() === category.toLowerCase().slice(0, -1))
+    .filter(
+      (p) => p.category?.toLowerCase() === category.toLowerCase().slice(0, -1)
+    )
     .slice(0, 8);
 
   const chunkedProducts = [
@@ -51,7 +53,7 @@ export default function PriceList() {
           }`}
           onClick={() => {
             setCategory("Vegetables");
-            localStorage.setItem('category','Vegetables');
+            localStorage.setItem("category", "Vegetables");
             setSlideIndex(0);
           }}
         >
@@ -66,7 +68,7 @@ export default function PriceList() {
           }`}
           onClick={() => {
             setCategory("Fruits");
-            localStorage.setItem('category', 'Fruits');
+            localStorage.setItem("category", "Fruits");
             setSlideIndex(0);
           }}
         >
@@ -77,30 +79,30 @@ export default function PriceList() {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-      <h2 className="text-2xl font-bold">{category}</h2>
-      {category === 'Vegetables' ? 
-        (   
+        <h2 className="text-2xl font-bold">{category}</h2>
+        {category === "Vegetables" ? (
           <Link
-            href='/webapp'
+            href="/webapp"
             className="text-green-600 cursor-pointer font-medium"
           >
             View all
           </Link>
-        ) : (<></>)
-      }
-    </div>
+        ) : (
+          <></>
+        )}
+      </div>
 
       {/* Product Grid or Empty Message */}
       {filteredProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md max-w-lg mx-auto">
           <div className="mb-6">
-              <div className="w-32 h-24 rounded-md flex items-center justify-center">
-                  <img src="/cancel-order.png" alt="logo" />
-              </div>
+            <div className="w-32 h-24 rounded-md flex items-center justify-center">
+              <img src="/cancel-order.png" alt="logo" />
+            </div>
           </div>
 
           <p className="text-center text-gray-700 text-lg mb-6">
-              No fruits available at this time. We’ll restock soon!
+            No fruits available at this time. We’ll restock soon!
           </p>
 
           {/* <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
@@ -140,7 +142,13 @@ export default function PriceList() {
                 >
                   {group.map((item) => (
                     <div key={item._id} className="p-3">
-                      <ProductCard item={item} onAddToCart={addToCart} />
+                      <ProductCard 
+                        item={item} 
+                        onAddToCart={addToCart}
+                        cartItems={cartItems}
+                        incrementQuantity={incrementQuantity}
+                        decreaseQuantity={decreaseQuantity}
+                      />
                     </div>
                   ))}
                 </div>

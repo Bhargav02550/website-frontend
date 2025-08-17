@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import "swiper/css";
 import "swiper/css/pagination";
 import Image from "next/image";
 
@@ -137,7 +136,9 @@ export default function TestimonialCarousel() {
                     {/* Avatar */}
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white z-10">
                       <Image
-                        src={imgErrors[t.name] ? "/default-avatar.png" : t.avatar}
+                        src={
+                          imgErrors[t.name] ? "/default-avatar.png" : t.avatar
+                        }
                         alt={t.name}
                         width={64}
                         height={64}
@@ -149,7 +150,9 @@ export default function TestimonialCarousel() {
                     {/* Content */}
                     <div className="flex flex-col flex-1 justify-between mt-6">
                       <div>
-                        <p className="font-semibold text-sm mb-1">“{t.quote}”</p>
+                        <p className="font-semibold text-sm mb-1">
+                          “{t.quote}”
+                        </p>
                         <p className="text-gray-600 text-xs line-clamp-3">
                           {t.description}
                         </p>

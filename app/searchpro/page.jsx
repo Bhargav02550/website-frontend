@@ -14,7 +14,7 @@ export default function SearchProPage() {
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState([]); // ✅ Declare products first
   const [filteredResults, setFilteredResults] = useState([]); // ✅ Init as empty array
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart, incrementQuantity, decreaseQuantity } = useCart();
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -89,7 +89,16 @@ export default function SearchProPage() {
         {filteredResults.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {filteredResults.map((item) => (
-              <ProductCard key={item._id} item={item} onAddToCart={addToCart} webapp={true} setShowLogin={setShowLogin}/>
+              <ProductCard 
+                key={item._id} 
+                item={item} 
+                onAddToCart={addToCart} 
+                webapp={true} 
+                setShowLogin={setShowLogin}
+                cartItems={cartItems}
+                incrementQuantity={incrementQuantity}
+                decreaseQuantity={decreaseQuantity}
+              />
             ))}
           </div>
         ) : (

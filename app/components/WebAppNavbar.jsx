@@ -8,6 +8,19 @@ import Address from "../components/Address";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../cartpro/CartContext";
 import LoginCard from "../components/LoginCard";
+import SidePanel from "../components/SidePanel";
+import QuickPeekPanel from "../components/QuickPeekPanel";
+import {
+  ShoppingCartSimple,
+  Heart,
+  Bell,
+  Receipt,
+  Wallet,
+  UserCircle,
+  MapPinLine,
+  SignOut,
+  SignIn,
+} from "@phosphor-icons/react";
 
 export default function Header() {
   const router = useRouter();
@@ -21,6 +34,9 @@ export default function Header() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelType, setPanelType] = useState(null); // 'cart' | 'notifications' | 'profile' | 'wishlist' | 'orders' | 'wallet' | 'addresses'
+  const hoverCloseTimeout = useRef(null);
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -51,7 +67,47 @@ export default function Header() {
   useEffect(() => {
     setShowProfileDropdown(false);
     setMobileMenuOpen(false);
+    setPanelOpen(false);
+    setPanelType(null);
   }, [pathname]);
+
+  // Lock body scroll when mobile menu or side panel is open
+  useEffect(() => {
+    if (mobileMenuOpen || panelOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen, panelOpen]);
+
+  const openPanel = (type) => {
+    setPanelType(type);
+    setPanelOpen(true);
+  };
+  const closePanel = () => setPanelOpen(false);
+
+  const getPanelData = () => {
+    switch (panelType) {
+      case "cart":
+        return { items: cartItems };
+      case "notifications":
+        return { list: [] };
+      case "wishlist":
+        return { list: [] };
+      case "orders":
+        return { list: [] };
+      case "wallet":
+        return { balance: 0 };
+      case "addresses":
+        return { list: [] };
+      case "profile":
+      default:
+        return {};
+    }
+  };
 
   return (
     <>
@@ -108,90 +164,154 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="/cart" className="relative">
-              <Image src="/webapp/cart.svg" alt="Cart" width={24} height={24} />
+          <div className="hidden md:flex items-center gap-3">
+            {/* Cart */}
+            <button
+              type="button"
+              onClick={() => openPanel("cart")}
+              className="relative inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
+            >
+              <ShoppingCartSimple size={24} />
               {cartItems.length > 0 && (
-                <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] min-w-4 h-4 px-1 flex items-center justify-center rounded-full">
                   {cartItems.length}
                 </span>
               )}
-            </Link>
+            </button>
 
-            <Link href="/wishlist" className="relative">
-              <Image
-                src="/webapp/wishlist.svg"
-                alt="Wishlist"
-                width={24}
-                height={24}
-              />
-              {wishlist >= 1 && (
-                <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                  {wishlist}
-                </span>
-              )}
-            </Link>
+            {/* Notifications */}
+            <button
+              type="button"
+              onClick={() => openPanel("notifications")}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
+            >
+              <Bell size={24} />
+            </button>
 
-            <Link href="/notifications">
-              <Image
-                src="/webapp/notifications.svg"
-                alt="Notifications"
-                width={24}
-                height={24}
-              />
-            </Link>
-
-            <Link href="/ordershistory">
-              <Image
-                src="/webapp/myOrders.svg"
-                alt="Orders"
-                width={24}
-                height={24}
-              />
-            </Link>
-
-            <Link href="/wallet">
-              <Image
-                src="/webapp/wallet.svg"
-                alt="Wallet"
-                width={24}
-                height={24}
-              />
-            </Link>
-
-            <div className="relative">
+            {/* Profile (hover to open) */}
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (hoverCloseTimeout.current)
+                  clearTimeout(hoverCloseTimeout.current);
+                setShowProfileDropdown(true);
+              }}
+              onMouseLeave={() => {
+                if (hoverCloseTimeout.current)
+                  clearTimeout(hoverCloseTimeout.current);
+                hoverCloseTimeout.current = setTimeout(
+                  () => setShowProfileDropdown(false),
+                  150
+                );
+              }}
+            >
               <button
-                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                className="rounded-full cursor-pointe"
+                onClick={() => setShowProfileDropdown((v) => !v)}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 cursor-pointer"
+                aria-haspopup="menu"
+                aria-expanded={showProfileDropdown}
               >
-                <Image src="/webapp/profile.svg" alt="Profile" width={24} height={24} className="bg-green-400" />
+                <UserCircle size={24} />
               </button>
               {showProfileDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-50">
-                  <p className="block px-4 py-2 text-sm hover:bg-gray-100">
-                    My Account
-                  </p>
-                  <Link
-                    href="/saved-address"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                <div
+                  className="absolute right-0 top-full w-56 bg-white shadow-lg rounded-lg z-50 py-2"
+                  onMouseEnter={() => {
+                    if (hoverCloseTimeout.current)
+                      clearTimeout(hoverCloseTimeout.current);
+                    setShowProfileDropdown(true);
+                  }}
+                  onMouseLeave={() => {
+                    if (hoverCloseTimeout.current)
+                      clearTimeout(hoverCloseTimeout.current);
+                    hoverCloseTimeout.current = setTimeout(
+                      () => setShowProfileDropdown(false),
+                      150
+                    );
+                  }}
+                >
+                  <div className="px-4 pb-2 text-xs uppercase tracking-wide text-gray-500 flex items-center gap-2">
+                    <UserCircle size={16} />
+                    <span>My Account</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openPanel("profile");
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-left"
                   >
-                    Saved Address
-                  </Link>
+                    <UserCircle size={18} /> Profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openPanel("addresses");
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-left"
+                  >
+                    <MapPinLine size={18} /> Saved Address
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openPanel("wishlist");
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-left"
+                  >
+                    <span className="relative inline-flex items-center">
+                      <Heart size={18} />
+                      {wishlist >= 1 && (
+                        <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] min-w-4 h-4 px-1 flex items-center justify-center rounded-full">
+                          {wishlist}
+                        </span>
+                      )}
+                    </span>
+                    Wishlist
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openPanel("orders");
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-left"
+                  >
+                    <Receipt size={18} /> Orders
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openPanel("wallet");
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-left"
+                  >
+                    <Wallet size={18} /> Wallet
+                  </button>
+                  <div className="my-1 h-px bg-gray-200" />
                   {isAuthenticated ? (
                     <button
                       onClick={() => {
                         setShowLogoutConfirm(true);
+                        setShowProfileDropdown(false);
                       }}
-                      className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer"
                     >
-                      Logout
+                      <SignOut size={18} /> Logout
                     </button>
                   ) : (
                     <button
-                      onClick={() => setShowLogin(true)}
-                      className="w-full text-left cursor-pointer px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      onClick={() => {
+                        setShowLogin(true);
+                        setShowProfileDropdown(false);
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-green-700 hover:bg-gray-100 cursor-pointer"
                     >
-                      Signin/Signup
+                      <SignIn size={18} /> Sign in / Sign up
                     </button>
                   )}
                 </div>
@@ -228,99 +348,148 @@ export default function Header() {
           </div>
         </nav>
 
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3 space-y-4">
-            <form onSubmit={handleSearch} className="w-full">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products..."
-                className="w-full px-4 py-2 border rounded-md text-sm"
-              />
-            </form>
+        {/* Mobile Drawer */}
+        <div
+          className={`md:hidden fixed inset-0 z-50 ${
+            mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"
+          }`}
+          aria-hidden={!mobileMenuOpen}
+        >
+          {/* Backdrop */}
+          <button
+            aria-label="Close mobile menu"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${
+              mobileMenuOpen ? "opacity-100" : "opacity-0"
+            }`}
+          />
 
-            <div className="flex flex-col space-y-4 text-sm">
-              {[
-                { href: "/cart", icon: "/webapp/cart.svg", label: "Cart" },
-                {
-                  href: "/wishlist",
-                  icon: "/webapp/wishlist.svg",
-                  label: "Wishlist",
-                },
-                {
-                  href: "/notifications",
-                  icon: "/webapp/notifications.svg",
-                  label: "Notifications",
-                },
-                {
-                  href: "/ordershistory",
-                  icon: "/webapp/myOrders.svg",
-                  label: "My Orders",
-                },
-                {
-                  href: "#",
-                  icon: "/webapp/profile.svg",
-                  label: "Profile",
-                  extraClass: "bg-green-700",
-                },
-              ].map((item, idx) => (
-                <Link
-                  key={idx}
-                  href={item.href}
-                  className="flex items-center gap-3"
+          {/* Right panel */}
+          <aside
+            className={`absolute right-0 top-0 h-full w-[85%] max-w-xs bg-white shadow-xl transition-transform duration-300 ${
+              mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-center justify-between p-4 border-b">
+              <span className="text-sm font-medium">Menu</span>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded hover:bg-gray-100"
+                aria-label="Close panel"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-gray-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
                 >
-                  <Image
-                    src={item.icon}
-                    alt={item.label}
-                    width={32}
-                    height={32}
-                    className=""
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
                   />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-
-              {isAuthenticated ? (
-                <Link
-                  href="/logout" // or the route you want
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowLogoutConfirm(true);
-                  }}
-                  className="flex items-center gap-3 text-red-600"
-                >
-                  <Image
-                    src="/webapp/logout.svg"
-                    alt="Logout"
-                    width={42}
-                    height={42}
-                    className="object-contain"
-                  />
-                  Logout
-                </Link>
-              ) : (
-                <Link
-                  href="/login" // or the route you want
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowLogin(true);
-                  }}
-                  className="flex items-center gap-3 text-green-600"
-                >
-                  <Image
-                    src="/webapp/login.svg"
-                    alt="Login"
-                    width={32}
-                    height={32}
-                    className="p-1 bg-gray-100 rounded-full"
-                  />
-                  Login
-                </Link>
-              )}
+                </svg>
+              </button>
             </div>
-          </div>
-        )}
+
+            <div className="p-4 space-y-4 h-[calc(100%-57px)] overflow-y-auto">
+              <form onSubmit={handleSearch} className="w-full">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="w-full px-4 py-2 border rounded-md text-sm"
+                />
+              </form>
+
+              <div className="flex flex-col space-y-4 text-sm">
+                {[
+                  {
+                    href: "/profile",
+                    label: "Profile",
+                    icon: <UserCircle size={24} />,
+                  },
+                  {
+                    href: "/cart",
+                    label: "Cart",
+                    icon: <ShoppingCartSimple size={24} />,
+                  },
+                  {
+                    href: "/wishlist",
+                    label: "Wishlist",
+                    icon: <Heart size={24} />,
+                  },
+                  {
+                    href: "/notifications",
+                    label: "Notifications",
+                    icon: <Bell size={24} />,
+                  },
+                  {
+                    href: "/ordershistory",
+                    label: "My Orders",
+                    icon: <Receipt size={24} />,
+                  },
+                  {
+                    href: "/wallet",
+                    label: "Wallet",
+                    icon: <Wallet size={24} />,
+                  },
+                  {
+                    href: "/saved-address",
+                    label: "Saved Address",
+                    icon: <MapPinLine size={24} />,
+                  },
+                ].map((item, idx) => (
+                  <Link
+                    key={idx}
+                    href={item.href}
+                    className="flex items-center gap-3"
+                  >
+                    <span className="inline-flex items-center justify-center w-8 h-8">
+                      {item.icon}
+                    </span>
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+
+                {isAuthenticated ? (
+                  <Link
+                    href="/logout"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowLogoutConfirm(true);
+                    }}
+                    className="flex items-center gap-3 text-red-600"
+                  >
+                    <span className="inline-flex items-center justify-center w-8 h-8">
+                      <SignOut size={24} />
+                    </span>
+                    <span>Logout</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowLogin(true);
+                    }}
+                    className="flex items-center gap-3 text-green-600"
+                  >
+                    <span className="inline-flex items-center justify-center w-8 h-8">
+                      <SignIn size={24} />
+                    </span>
+                    <span>Login</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
 
         {/* Location Popup */}
         {showLocationPopup && (
@@ -382,6 +551,36 @@ export default function Header() {
           </div>
         )}
       </header>
+      {/* Universal Side Panel for quick peeks from header/dropdown */}
+      <SidePanel
+        open={panelOpen}
+        onClose={closePanel}
+        title={
+          panelType === "cart"
+            ? "My Cart"
+            : panelType === "notifications"
+            ? "Notifications"
+            : panelType === "wishlist"
+            ? "Wishlist"
+            : panelType === "orders"
+            ? "My Orders"
+            : panelType === "wallet"
+            ? "Wallet"
+            : panelType === "addresses"
+            ? "Saved Addresses"
+            : panelType === "profile"
+            ? "My Account"
+            : ""
+        }
+      >
+        {panelType && (
+          <QuickPeekPanel
+            type={panelType}
+            data={getPanelData()}
+            onClose={closePanel}
+          />
+        )}
+      </SidePanel>
     </>
   );
 }

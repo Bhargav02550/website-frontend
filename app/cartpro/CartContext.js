@@ -64,6 +64,13 @@ export function CartProvider({ children }) {
     });
   };
 
+  // Update quantity directly
+  const updateQuantity = (item, newQty) => {
+    setCart((prevCart) =>
+      prevCart.map((i) => (i._id === item._id ? { ...i, quantity: newQty } : i))
+    );
+  };
+
   // Remove item completely
   const removeFromCart = (item) => {
     setCart((prevCart) => prevCart.filter((i) => i._id !== item._id));
@@ -81,6 +88,7 @@ export function CartProvider({ children }) {
         decreaseQuantity,
         removeFromCart,
         clearCart,
+        updateQuantity,
       }}
     >
       {children}

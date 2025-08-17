@@ -2,54 +2,92 @@
 import { useState, useEffect } from "react";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
-import { Heart } from "lucide-react";
+import {
+  Heart,
+  ShoppingCart,
+  Plus,
+  Minus,
+  Star,
+  Eye,
+} from "@phosphor-icons/react";
 import axios from "axios";
 
-export default function ProductCard({ item, onAddToCart, webapp, setShowLogin }) {
+export default function ProductCard({
+  item,
+  onAddToCart,
+  webapp,
+  setShowLogin,
+  onQuickView,
+  cartItems,
+  incrementQuantity,
+  decreaseQuantity,
+  updateQuantity,
+  removeFromCart,
+}) {
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
   const { showToast } = useToast();
-  const { isAuthenticated , logout, Get_Wishlist } = useAuth();
+  const { isAuthenticated, logout, Get_Wishlist } = useAuth();
   const backendURL = process.env.NEXT_PUBLIC_API_URL;
-  const [isWishlisted, setIsWishlisted] = useState(false)
 
-  const increment = () => setQuantity((q) => q + 1);
-  const decrement = () => setQuantity((q) => Math.max(1, q - 1));
+  // Cart info
+  const cartItem = cartItems?.find((c) => c._id === item._id);
+  const isInCart = !!cartItem;
+  const cartQuantity = cartItem?.quantity || 0;
 
+  // Stock checks
+  const isOutOfStock = item.stock === 0;
+  const isLowStock = item.stock > 0 && item.stock <= 5;
+
+  // Helpers
+  const formatPrice = (price) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(price);
+
+  const getDiscountPercentage = () =>
+    item.originalPrice && item.originalPrice > item.price
+      ? Math.round(
+          ((item.originalPrice - item.price) / item.originalPrice) * 100
+        )
+      : 0;
+
+  // Close login popup if authenticated
   useEffect(() => {
     if (isAuthenticated && typeof setShowLogin === "function") {
       setShowLogin(false);
     }
   }, [isAuthenticated, setShowLogin]);
 
-  // Check if item is already in wishlist on component mount
+  // Check if product is already wishlisted
   useEffect(() => {
     const checkWishlist = async () => {
+      if (!isAuthenticated) return;
       try {
-        if (!isAuthenticated) return;
-
-        const data = await Get_Wishlist();
-
-        const wishlist = data || [];
-        const found = wishlist.find((p) => p._id === item._id);
-        if (found) setIsWishlisted(true);
+        const wishlist = (await Get_Wishlist()) || [];
+        setIsWishlisted(wishlist.some((p) => p._id === item._id));
       } catch (err) {
-        if(err.status === 500) logout();
-        console.error("Failed to check wishlist", err);
+        if (err.status === 500) logout();
+        console.error("Wishlist check failed:", err);
       }
     };
-
     checkWishlist();
   }, [isAuthenticated, item._id]);
 
   const toggleWishlist = async () => {
-    if (!isAuthenticated) {
-      setShowLogin(true);
-      return;
-    }
+    if (!isAuthenticated) return setShowLogin?.(true);
 
+    setWishlistLoading(true);
     try {
-      let token = localStorage.getItem("token");
-      if(token) token = JSON.parse(token);
+      const token = JSON.parse(localStorage.getItem("token") || "null");
       const res = await axios.post(`${backendURL}/togglewish`, {
         token,
         productId: item._id,
@@ -57,119 +95,180 @@ export default function ProductCard({ item, onAddToCart, webapp, setShowLogin })
 
       await Get_Wishlist();
       const { status } = res.data;
-      if (status === "added") {
-        setIsWishlisted(true);
-        showToast("Added to wishlist", "success");
-      } else if (status === "removed") {
-        setIsWishlisted(false);
-        showToast("Removed from wishlist", "info");
-      }
+      setIsWishlisted(status === "added");
+      showToast(
+        status === "added" ? "Added to wishlist" : "Removed from wishlist",
+        status === "added" ? "success" : "info"
+      );
     } catch (error) {
-      console.error(error);
+      console.error("Wishlist toggle error:", error);
+    } finally {
+      setWishlistLoading(false);
     }
   };
 
-  const handleInput = (e) => {
-    const val = e.target.value;
-    // Allow empty string so user can type freely
-    if (val === "") {
-      setQuantity("");
-      return;
-    }
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) return setShowLogin?.(true);
 
-    const num = parseInt(val);
-    if (!isNaN(num) && num >= 1) {
-      setQuantity(num);
+    setIsLoading(true);
+    try {
+      await onAddToCart({ ...item, quantity });
+      setQuantity(1);
+      showToast(`${item.name} added to cart (${quantity} kg)`, "success");
+    } catch {
+      showToast("Failed to add item to cart", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      setShowLogin(true);
-      return;
-    }
-    onAddToCart({ ...item, quantity });
-    setQuantity(1);
-    showToast("Item added to cart", "success");
-  };
+  const [inputQty, setInputQty] = useState(cartQuantity);
+
+  // keep input in sync when cartQuantity changes externally
+  useEffect(() => {
+    setInputQty(cartQuantity);
+  }, [cartQuantity]);
 
   return (
     <div
-      className="bg-white rounded-2xl shadow p-4 text-center flex flex-col justify-between h-full
-      border border-transparent hover:border-green-500 hover:scale-[1.01] hover:shadow-lg
-      focus-within:border-green-500 focus-within:scale-[1.01] focus-within:shadow-lg
-      transition-all duration-200 ease-in-out
-      w-full max-w-[calc(100vw-20px)] sm:max-w-xs mx-auto"
+      className="group relative bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-200 hover:border-green-300 
+  p-3 sm:p-4 text-center flex flex-col justify-between h-full transition-all duration-200 w-full"
     >
-      {/* Product Image */}
-      <div className="flex justify-center items-center w-full h-28 mb-2">
-        <img
-          src={item.image?.url}
-          alt={item.name}
-          className="w-28 h-28 object-contain"
-        />
-      </div>
+      {/* Top Row: Discount & Wishlist */}
+      <div className="absolute inset-x-0 top-0 p-2 sm:p-3 flex justify-between items-start z-10">
+        {getDiscountPercentage() > 0 && (
+          <span className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
+            -{getDiscountPercentage()}%
+          </span>
+        )}
 
-      {/* Name & Price */}
-      <div className="flex justify-between items-center w-full px-2 mt-1">
-        <h3 className="font-bold text-sm truncate max-w-[65%]">{item.name}</h3>
-        <p className="text-sm text-gray-700 font-semibold whitespace-nowrap">
-          ₹{item.price}/Kg
-        </p>
-      </div>
-
-      {/* Quantity + Add Button */}
-      {webapp ? (
-        <div
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3 w-full max-w-full mx-auto"
-        >
-          <div className="flex justify-center mt-2">
-            <Heart
-              onClick={toggleWishlist}
-              className={`w-5 h-5 cursor-pointer transition-all duration-300
-                ${isWishlisted ? "text-red-500 scale-125" : "text-gray-400 scale-100"}`}
-            />
-          </div>
-          {/* Quantity Controls */}
-          {/* <div className="flex items-center space-x-1 text-xs sm:text-sm justify-center sm:justify-start">
-            <button
-              onClick={decrement}
-              className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold text-xs sm:text-sm"
-            >
-              -
-            </button>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={handleInput}
-              onBlur={() => {
-                if (!quantity || quantity < 1) setQuantity(1);
-              }}
-              onKeyDown={(e) => {
-                if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
-              }}
-              className="w-10 text-center focus:outline-none no-spinner font-bold text-xs sm:text-sm"
-            />
-            <button
-              onClick={increment}
-              className="border border-gray-300 px-2 py-1 rounded text-gray-700 font-bold text-xs sm:text-sm"
-            >
-              +
-            </button>
-          </div> */}
-
-          {/* Add to Cart Button */}
+        {webapp && (
           <button
-            onClick={handleAddToCart}
-            className="bg-[#2E7D32] cursor-pointer hover:bg-green-700 text-white font-medium
-              px-3 py-1.5 rounded-lg text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
+            onClick={toggleWishlist}
+            disabled={wishlistLoading}
+            className={`p-1 sm:p-1.5 rounded-full transition-colors ${
+              isWishlisted ? "text-red-500" : "text-gray-400 hover:text-red-500"
+            }`}
           >
-            Add to cart
+            <Heart
+              weight={isWishlisted ? "fill" : "regular"}
+              className="w-4 h-4 sm:w-5 sm:h-5"
+            />
           </button>
+        )}
+      </div>
+
+      {/* Product Image */}
+      <div className="relative flex justify-center items-center w-full h-24 sm:h-28 mb-2 sm:mb-3 mt-6">
+        {!imageLoaded && !imageError && (
+          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
+        )}
+
+        {imageError ? (
+          <div className="text-gray-400 text-center">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-lg mx-auto mb-1 flex items-center justify-center">
+              📦
+            </div>
+            <span className="text-[10px] sm:text-xs">No image</span>
+          </div>
+        ) : (
+          <img
+            src={item.image?.url || "/placeholder-product.png"}
+            alt={item.name}
+            className={`w-full h-full object-contain transition-opacity duration-300 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            } ${isOutOfStock ? "grayscale opacity-50" : ""}`}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
+          />
+        )}
+      </div>
+
+      {/* Product Info */}
+      <div className="flex-1 space-y-1 sm:space-y-2 flex flex-col items-start">
+        <h3 className="font-medium text-xs sm:text-sm text-gray-900 line-clamp-2 leading-tight text-left">
+          {item.name}
+        </h3>
+        <span className="text-gray-500 text-xs font-light">1Kg</span>
+        <div className="flex flex-row sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+          {/* {cartQuantity > 0 && (
+            <div className="text-[10px] sm:text-xs text-right">
+              <div className="text-gray-600">In cart: {cartQuantity}kg</div>
+              <div className="font-semibold text-green-600">
+                {formatPrice(item.price * cartQuantity)}
+              </div>
+            </div>
+          )} */}
         </div>
-      ) : (
-        <></>
+
+        {/* Stock Status */}
+        {isOutOfStock && (
+          <div className="text-[10px] sm:text-xs text-red-500 font-medium">
+            Out of Stock
+          </div>
+        )}
+        {isLowStock && !isOutOfStock && (
+          <div className="text-[10px] sm:text-xs text-orange-500 font-medium">
+            Only {item.stock} left
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      {webapp && (
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100 flex flex-row w-full justify-between items-center">
+          <div>
+            <span className="text-sm">{formatPrice(item.price)}</span>
+            {/* <span className="text-[10px] sm:text-xs text-gray-500 ml-0.5 sm:ml-1">
+              /kg
+            </span> */}
+            {item.originalPrice && item.originalPrice > item.price && (
+              <div className="text-[10px] sm:text-xs text-gray-400 line-through">
+                {formatPrice(item.originalPrice)}
+              </div>
+            )}
+          </div>
+          {!isInCart ? (
+            // ADD button
+            <button
+              onClick={handleAddToCart}
+              disabled={isOutOfStock || isLoading}
+              className={`w-[66px] py-1.5 sm:py-2 rounded text-[12px] sm:text-sm font-medium transition-colors border cursor-pointer
+              ${
+                isOutOfStock
+                  ? "bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed"
+                  : isLoading
+                  ? "bg-green-400 text-white border-green-400"
+                  : "bg-white text-green-600 border-green-600 hover:bg-green-50"
+              }`}
+            >
+              {isLoading ? "Adding..." : isOutOfStock ? "Out of Stock" : "ADD"}
+            </button>
+          ) : (
+            // Quantity state
+            <div className="flex items-center w-[66px] h-[32px] sm:h-[36px] bg-green-600 text-white rounded overflow-hidden">
+              {/* Left (Decrease) */}
+              <button
+                onClick={() => decreaseQuantity(item)}
+                className="flex-1 h-full text-sm font-bold hover:bg-green-700"
+              >
+                -
+              </button>
+
+              {/* Middle (Qty) */}
+              <span className="px-1 text-sm font-semibold">{cartQuantity}</span>
+
+              {/* Right (Increase) */}
+              <button
+                onClick={() => incrementQuantity(item)}
+                disabled={item.stock && cartQuantity >= item.stock}
+                className="flex-1 h-full text-sm font-bold hover:bg-green-700 disabled:opacity-50"
+              >
+                +
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
