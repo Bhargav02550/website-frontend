@@ -14,6 +14,9 @@ import {
   Trash,
 } from "@phosphor-icons/react";
 import { useCart } from "../cartpro/CartContext";
+import { useEffect } from "react";
+import axios from "axios";
+import { useState } from "react";
 
 export default function QuickPeekPanel({ type, data = {}, onClose }) {
   // type: 'cart' | 'notifications' | 'profile' | 'wishlist' | 'orders' | 'wallet' | 'addresses'
@@ -56,11 +59,32 @@ export default function QuickPeekPanel({ type, data = {}, onClose }) {
     removeFromCart,
   } = useCart();
 
+  let token = localStorage.getItem("token");
+  if (token) token = JSON.parse(token);
+
+  const [addresses, setAddresses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const backendApi = process.env.NEXT_PUBLIC_API_URL;
+
+  useEffect(() => {
+    if (type === "addresses") {
+      axios
+        .post(`${backendApi}/getAddress`, { token })
+        .then((response) => {
+          setAddresses(response.data);
+        })
+        .catch((error) => {
+          setError("Failed to fetch Addresses");
+        });
+    }
+  }, [type]);
+
   return (
     <div className="space-y-3">
       {/* Content preview */}
       {type === "cart" && <CartPreview />}
-
 
       {type === "notifications" && (
         <EmptyOrList list={data.list} emptyText="No new notifications." />
@@ -87,7 +111,7 @@ export default function QuickPeekPanel({ type, data = {}, onClose }) {
 
       {type === "addresses" && (
         <EmptyOrList
-          list={data.list}
+          list={addresses}
           emptyText="No saved addresses."
           renderItem={(addr) => (
             <div className="text-sm">
@@ -155,7 +179,9 @@ function CartPreview() {
           <ShoppingCartSimple className="w-6 h-6 text-gray-400" />
         </div>
         <p className="text-gray-600 font-medium">Your cart is empty</p>
-        <p className="text-sm text-gray-500 mt-1">Add some items to get started</p>
+        <p className="text-sm text-gray-500 mt-1">
+          Add some items to get started
+        </p>
       </div>
     );
   }
@@ -205,7 +231,9 @@ function CartPreview() {
                   <h4 className="text-sm font-medium text-gray-900 truncate">
                     {getItemName(item)}
                   </h4>
-                  <p className="text-xs text-gray-500 mt-0.5">₹{price.toFixed(2)} / kg</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    ₹{price.toFixed(2)} / kg
+                  </p>
 
                   {/* Quantity Controls */}
                   <div className="flex items-center mt-2">
@@ -250,7 +278,9 @@ function CartPreview() {
 
                 {/* Line total + remove */}
                 <div className="text-right flex flex-col items-end">
-                  <p className="text-sm font-semibold text-green-600">₹{lineTotal.toFixed(2)}</p>
+                  <p className="text-sm font-semibold text-green-600">
+                    ₹{lineTotal.toFixed(2)}
+                  </p>
                   {item.originalPrice && item.originalPrice > price && (
                     <p className="text-xs text-gray-400 line-through">
                       ₹{(item.originalPrice * qty).toFixed(2)}
@@ -291,19 +321,27 @@ function CartPreview() {
 
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-600">Subtotal</span>
-            <span className="text-sm font-semibold text-gray-800">₹{subtotal.toFixed(2)}</span>
+            <span className="text-sm font-semibold text-gray-800">
+              ₹{subtotal.toFixed(2)}
+            </span>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <span className="text-sm font-medium text-gray-600">Delivery</span>
+              <span className="text-sm font-medium text-gray-600">
+                Delivery
+              </span>
               {subtotal > 500 && (
                 <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">
                   Free shipping!
                 </span>
               )}
             </div>
-            <span className={`text-sm font-semibold ${delivery === 0 ? "text-green-600" : "text-gray-800"}`}>
+            <span
+              className={`text-sm font-semibold ${
+                delivery === 0 ? "text-green-600" : "text-gray-800"
+              }`}
+            >
               {delivery === 0 ? "FREE" : "₹50.00"}
             </span>
           </div>
@@ -325,8 +363,12 @@ function CartPreview() {
       {/* Fixed total */}
       <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
         <div className="flex items-center justify-between">
-          <span className="text-base font-semibold text-gray-900">Total Amount</span>
-          <span className="text-lg font-bold text-green-600">₹{total.toFixed(2)}</span>
+          <span className="text-base font-semibold text-gray-900">
+            Total Amount
+          </span>
+          <span className="text-lg font-bold text-green-600">
+            ₹{total.toFixed(2)}
+          </span>
         </div>
         <button className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 mt-3">
           Proceed to Checkout
@@ -335,7 +377,6 @@ function CartPreview() {
     </div>
   );
 }
-
 
 function EmptyOrList({ list, emptyText, renderItem }) {
   if (!list?.length)

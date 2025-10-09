@@ -32,7 +32,7 @@ export default function ProductCard({
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const { showToast } = useToast();
-  const { isAuthenticated, logout, Get_Wishlist } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const backendURL = process.env.NEXT_PUBLIC_API_URL;
 
   // Cart info
@@ -67,44 +67,8 @@ export default function ProductCard({
     }
   }, [isAuthenticated, setShowLogin]);
 
-  // Check if product is already wishlisted
-  useEffect(() => {
-    const checkWishlist = async () => {
-      if (!isAuthenticated) return;
-      try {
-        const wishlist = (await Get_Wishlist()) || [];
-        setIsWishlisted(wishlist.some((p) => p._id === item._id));
-      } catch (err) {
-        if (err.status === 500) logout();
-        console.error("Wishlist check failed:", err);
-      }
-    };
-    checkWishlist();
-  }, [isAuthenticated, item._id]);
-
   const toggleWishlist = async () => {
     if (!isAuthenticated) return setShowLogin?.(true);
-
-    setWishlistLoading(true);
-    try {
-      const token = JSON.parse(localStorage.getItem("token") || "null");
-      const res = await axios.post(`${backendURL}/togglewish`, {
-        token,
-        productId: item._id,
-      });
-
-      await Get_Wishlist();
-      const { status } = res.data;
-      setIsWishlisted(status === "added");
-      showToast(
-        status === "added" ? "Added to wishlist" : "Removed from wishlist",
-        status === "added" ? "success" : "info"
-      );
-    } catch (error) {
-      console.error("Wishlist toggle error:", error);
-    } finally {
-      setWishlistLoading(false);
-    }
   };
 
   const handleAddToCart = async () => {
@@ -140,21 +104,6 @@ export default function ProductCard({
           <span className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
             -{getDiscountPercentage()}%
           </span>
-        )}
-
-        {webapp && (
-          <button
-            onClick={toggleWishlist}
-            disabled={wishlistLoading}
-            className={`p-1 sm:p-1.5 rounded-full transition-colors ${
-              isWishlisted ? "text-red-500" : "text-gray-400 hover:text-red-500"
-            }`}
-          >
-            <Heart
-              weight={isWishlisted ? "fill" : "regular"}
-              className="w-4 h-4 sm:w-5 sm:h-5"
-            />
-          </button>
         )}
       </div>
 

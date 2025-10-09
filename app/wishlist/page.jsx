@@ -9,16 +9,9 @@ import axios from 'axios';
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { Get_Wishlist } = useAuth();
   const { addToCart } = useCart();
   const backendApi = process.env.NEXT_PUBLIC_API_URL;
 
-  const fetchWishlist = async () => {
-    setLoading(true);
-    const data = await Get_Wishlist();
-    setWishlist(data);
-    setLoading(false);
-  };
 
   const handleRemoveWish = async (productId) => {
     try {
@@ -31,10 +24,6 @@ export default function WishlistPage() {
       console.error("Failed to remove from wishlist:", error);
     }
   };
-
-  useEffect(() => {
-    fetchWishlist();
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-16">

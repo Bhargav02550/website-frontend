@@ -8,6 +8,8 @@ import WebAppNavbar from "./components/WebAppNavbar";
 import { CartProvider } from "./cartpro/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
+import CartPill from "./components/CartPill";
+import BottomNavbar from "./components/BottomNavbar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,9 +28,16 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  const showWebAppNavbar = pathname.startsWith("/webapp") || pathname.startsWith("/search") || 
-  pathname.startsWith("/cart") || pathname.startsWith("/wishlist") || pathname.startsWith("/notifications") || pathname.startsWith("/wallet")||
-  pathname.startsWith("/ordershistory") || pathname.startsWith("/checkout") || pathname.startsWith("/saved-address");
+  const showWebAppNavbar =
+    pathname.startsWith("/webapp") ||
+    pathname.startsWith("/search") ||
+    pathname.startsWith("/cart") ||
+    pathname.startsWith("/wishlist") ||
+    pathname.startsWith("/notifications") ||
+    pathname.startsWith("/wallet") ||
+    pathname.startsWith("/ordershistory") ||
+    pathname.startsWith("/checkout") ||
+    pathname.startsWith("/saved-address");
 
   return (
     <html lang="en">
@@ -38,6 +47,8 @@ export default function RootLayout({ children }) {
             <CartProvider>
               {showWebAppNavbar ? <WebAppNavbar /> : <Header />}
               <main>{children}</main>
+              <CartPill />
+              <BottomNavbar />
             </CartProvider>
           </AuthProvider>
         </ToastProvider>

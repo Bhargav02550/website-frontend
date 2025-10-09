@@ -257,24 +257,6 @@ export default function Header() {
                   <button
                     type="button"
                     onClick={() => {
-                      openPanel("wishlist");
-                      setShowProfileDropdown(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 text-left"
-                  >
-                    <span className="relative inline-flex items-center">
-                      <Heart size={18} />
-                      {wishlist >= 1 && (
-                        <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] min-w-4 h-4 px-1 flex items-center justify-center rounded-full">
-                          {wishlist}
-                        </span>
-                      )}
-                    </span>
-                    Wishlist
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
                       openPanel("orders");
                       setShowProfileDropdown(false);
                     }}
