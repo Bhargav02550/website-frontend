@@ -22,7 +22,7 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
+});       
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -31,7 +31,8 @@ export default function RootLayout({ children }) {
   pathname.startsWith("/ordershistory") || pathname.startsWith("/checkout") || pathname.startsWith("/saved-address");
 
   return (
-    <html lang="en">
+    <html lang="en">  
+      <link rel="icon" type="image/png" href="/LOGO-png 3.svg"></link>
       <body className={`${inter.variable} antialiased`}>
         <ToastProvider>
           <AuthProvider>
