@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useCart } from "../core/Cart/CartContext";
 import ProductCard from "./ProductCard";
+import { IconCirclePlus } from "@tabler/icons-react";
 
 export default function ViewAll({ webapp, setShowLogin }) {
   const {
@@ -25,19 +26,20 @@ export default function ViewAll({ webapp, setShowLogin }) {
     const inCart = cartItems.find((i) => i.id === item.id);
     setSelectedItem(item);
     setQuantity(inCart ? inCart.quantity : 1);
-    setShowModal(true);
+    // previously used setShowModal; use selectedItem state to indicate modal should open
   };
 
   const handleAddToCart = () => {
     if (selectedItem) {
       addToCart({ ...selectedItem, quantity });
-      setShowModal(false);
+      // close modal by clearing selected item
+      setSelectedItem(null);
       setQuantity(1);
     }
   };
   const fetch_VegProducts = async () => {
     try {
-      const res = await axios.get(`${backendURL}/getAllProducts`); // update URL if different
+      const res = await axios.get(`${backendURL}/getAllProducts`);
       setProducts(res.data.products);
     } catch (err) {
       console.error("Error fetching products:", err);
@@ -73,11 +75,22 @@ export default function ViewAll({ webapp, setShowLogin }) {
   return (
     <>
       <section className="px-2 md:px-10 py-5">
-        <h2 className="text-sm font-bold mb-6 text-left">
-          Buy Bulk Fresh
-          {category === "Vegetables" ? " Vegetables " : "Fruits"}
-          Online
-        </h2>
+        <div className="flex flex-row justify-between items-center mb-5">
+          <h2 className="text-sm font-bold text-left">
+            Buy Bulk Fresh
+            {category === "Vegetables" ? " Vegetables " : "Fruits"}
+            Online
+          </h2>
+          <button
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center cursor-pointer"
+            onClick={() => {
+              window.location.href = "/webapp/create-template";
+            }}
+          >
+            <IconCirclePlus className="inline-block mr-2" size={22} />
+            Create Template
+          </button>
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 transition-all">
           {products.map((item) => (
